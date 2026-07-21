@@ -2,7 +2,7 @@
   "name": "rauszeit.",
   "short_name": "rauszeit.",
   "description": "Dein persönlicher Ausflug- und Restaurant-Finder für Tagesausflüge und Wochenenden.",
-  "start_url": "/",
+  "start_url": "/Rauszeit/",
   "display": "standalone",
   "background_color": "#f8f6f1",
   "theme_color": "#c45c2a",

@@ -1,8 +1,8 @@
 // rauszeit. Service Worker
 const CACHE_NAME = 'rauszeit-v1';
 const ASSETS = [
-  '/',
-  '/index.html',
+  '/Rauszeit/',
+  '/Rauszeit/index.html',
 ];
 
 // Install: cache core assets
