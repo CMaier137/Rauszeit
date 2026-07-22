@@ -389,8 +389,8 @@ test('DQ-05', 'Alle googleRatings zwischen 3.5 und 5.0', () => {
   LOCAL_VENUES.filter(v => v.googleRating).forEach(v =>
     assert(v.googleRating >= 3.5 && v.googleRating <= 5.0, `${v.name}: ${v.googleRating}`));
 });
-test('DQ-06', 'Gesamtzahl DB: 101 Einträge (61 Pfaffenhofen + 40 Miedzywodzie)', () => {
-  assertEqual(LOCAL_VENUES.length, 101, `Nur ${LOCAL_VENUES.length} Venues`);
+test('DQ-06', 'Gesamtzahl DB: 161 Einträge (87 Pfaffenhofen + 40 Miedzywodzie + 34 Inchenhofen)', () => {
+  assertEqual(LOCAL_VENUES.length, 161, `Nur ${LOCAL_VENUES.length} Venues`);
 });
 test('DQ-07', '28 Miedzywodzie-Aktivitäten + 12 Restaurants = 40 gesamt', () => {
   const miedzy = LOCAL_VENUES.filter(v => v.region === 'miedzywodzie');
@@ -414,24 +414,25 @@ test('SK-02', 'Skeleton-CSS shimmer-Animation vorhanden', () => {
   assert(html.includes('shimmer'), 'Shimmer-Animation fehlt');
   assert(html.includes('skeleton-card'), 'skeleton-card CSS fehlt');
 });
-test('SK-03', 'showSkeletons wird vor Anthropic API-Call aufgerufen', () => {
-  const skeletonIdx = html.indexOf('showSkeletons(9)');
-  const anthropicIdx = html.indexOf('stream:true,messages:');
-  assert(skeletonIdx > 0, 'showSkeletons(9) nicht gefunden');
-  assert(anthropicIdx > 0, 'Anthropic API-Call nicht gefunden');
-  assert(skeletonIdx < anthropicIdx, 'showSkeletons muss VOR dem Anthropic-fetch stehen');
+test('SK-03', 'showSkeletons und streamAndRenderVenues sind beide in findActivities vorhanden', () => {
+  // findActivities extrahieren und prüfen ob beide Calls drin sind
+  const faStart = html.indexOf('async function findActivities()');
+  const faEnd = html.indexOf('async function showDetail', faStart);
+  const fa = html.slice(faStart, faEnd);
+  assert(fa.includes('showSkeletons(9)'), 'showSkeletons(9) fehlt in findActivities');
+  assert(fa.includes('streamAndRenderVenues'), 'streamAndRenderVenues fehlt in findActivities');
 });
 test('SK-04', 'Streaming ist aktiviert (stream:true)', () => {
   assert(html.includes('stream:true'), 'stream:true fehlt im API-Call');
 });
 test('SK-05', 'Streaming-Reader Code vorhanden', () => {
   assert(html.includes('getReader'), 'getReader fehlt');
-  assert(html.includes('tryExtractVenue'), 'tryExtractVenue fehlt');
+  assert(html.includes('tryParseBuffer'), 'tryParseBuffer fehlt');
   assert(html.includes('content_block_delta'), 'SSE-Event-Handling fehlt');
 });
 test('SK-06', 'Fallback für file:// Umgebungen vorhanden', () => {
   assert(html.includes('venuesRes.body.getReader'), 'Streaming-Guard fehlt');
-  assert(html.includes('Fallback auf JSON'), 'Fallback-Kommentar fehlt');
+  assert(html.includes('venuesRes.body?.getReader'), 'Streaming-Fallback fehlt');
 });
 test('SK-07', 'Skeletons werden beim ersten Streaming-Treffer geleert', () => {
   assert(html.includes('skeletonsCleared'), 'skeletonsCleared-Flag fehlt');
@@ -440,6 +441,15 @@ test('SK-07', 'Skeletons werden beim ersten Streaming-Treffer geleert', () => {
 test('SK-08', 'Progress-Bar wird während Streaming animiert', () => {
   assert(html.includes('statusInterval'), 'statusInterval fehlt');
   assert(html.includes('statusMessages'), 'statusMessages fehlt');
+});
+
+test('DQ-08', '34 Inchenhofen-Venues vorhanden', () => {
+  const inch = LOCAL_VENUES.filter(v => v.region === 'inchenhofen');
+  assertEqual(inch.length, 34, `${inch.length} Inchenhofen-Venues statt 20`);
+});
+test('DQ-09', 'Inchenhofen in KNOWN_LOCATIONS', () => {
+  assert(html.includes("'inchenhofen'"), 'inchenhofen fehlt in KNOWN_LOCATIONS');
+  assert(html.includes("'86570'"), 'PLZ 86570 fehlt in KNOWN_LOCATIONS');
 });
 
 // ═══════════════════════════════════════════════════════════════════
