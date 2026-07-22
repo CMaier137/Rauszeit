@@ -28,6 +28,9 @@ self.addEventListener('activate', event => {
 // Fetch: network-first for HTML (always get latest version),
 // cache-first for everything else (fonts, etc.)
 self.addEventListener('fetch', event => {
+  // Niemals POST-Requests cachen (z.B. Anthropic API)
+  if (event.request.method !== 'GET') return;
+
   const url = new URL(event.request.url);
 
   // Always fetch HTML fresh from network so updates are instant
@@ -44,7 +47,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Cache-first for everything else
+  // Cache-first for everything else (nur GET)
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;

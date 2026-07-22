@@ -4467,6 +4467,22 @@ durationHours = realistisch empfohlene Aufenthaltsdauer in Stunden (z.B. Zoo=4, 
       }
     }
 
+    // Letzten Buffer-Rest versuchen zu parsen (falls letztes Objekt noch drin)
+    while (tryExtractVenue()) {}
+    // Fallback: robustParse auf gesamten Buffer wenn nichts gerendert wurde
+    if (rendered === 0 && buffer.trim().length > 0) {
+      console.log('⚠️ Streaming-Parser: kein Venue extrahiert, versuche robustParse');
+      const fallbackVenues = robustParse(buffer);
+      if (fallbackVenues.length) {
+        activities = fallbackVenues;
+        grid.innerHTML = '';
+        renderGrid(activities, date, location, type, actType, maxKm);
+        appendLoadMoreBtn(date);
+        setProgress(100); setTimeout(()=>setProgress(0),600);
+        return;
+      }
+    }
+
     // Restliche Skeletons entfernen falls weniger als 9 Karten kamen
     grid.querySelectorAll('.skeleton-card').forEach(s => s.remove());
 
