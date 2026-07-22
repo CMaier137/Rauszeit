@@ -440,9 +440,9 @@
 <div id="progress-bar"></div>
 
 <div id="api-banner">
-  <p><strong>API-Schlüssel einrichten</strong> — Einmalig auf <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> einen Schlüssel erstellen (nutzungsbasiert, ~$0.005 pro Suche). Er wird ausschließlich lokal in deinem Browser gespeichert.</p>
+  <p><strong>Passwort eingeben</strong> — Gib das Passwort ein, das du von rauszeit. erhalten hast.</p>
   <div class="key-row">
-    <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off"/>
+    <input type="password" id="api-key-input" placeholder="Passwort…" autocomplete="off"/>
     <button class="btn-save-key" onclick="saveKey()">Speichern</button>
     <span class="key-saved" id="key-saved">✓ Gespeichert</span>
   </div>
@@ -451,7 +451,7 @@
 <nav>
   <div class="logo">raus<span>zeit.</span></div>
   <div class="nav-right">
-    <span class="nav-tagline">Dein Wochenende wartet draußen.</span>
+    <span class="nav-tagline">Ausflüge & Restaurants. Immer einen Plan.</span>
     <button class="fav-nav-btn" onclick="toggleFavPanel()">
       ❤️ Favoriten <span class="fav-count" id="fav-count">0</span>
     </button>
@@ -463,13 +463,13 @@
 
 <section class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Dein Ausflugsfinder</p>
-    <h1>Raus aus dem Alltag,<br><em>rein ins Abenteuer</em></h1>
-    <p class="hero-sub">Kein Plan für das Wochenende? Kein Problem. Einfach Ort eingeben — wir zeigen dir was sich lohnt.</p>
+    <p class="hero-eyebrow">Ausflüge · Restaurants · Erlebnisse</p>
+    <h1>Raus aus dem Alltag,<br><em>rein ins Erlebnis</em></h1>
+    <p class="hero-sub">Kein Plan für das Wochenende oder freie Tage? Einfach Ort eingeben — wir finden Ausflüge und Restaurants die sich lohnen.</p>
     <div class="search-form">
       <!-- Mode toggle -->
       <div class="mode-toggle" id="mode-toggle">
-        <button class="mode-btn active" id="mode-act" onclick="setMode('activities')">🎯 Aktivitäten & Ausflüge</button>
+        <button class="mode-btn active act-mode" id="mode-act" onclick="setMode('activities')">🎯 Aktivitäten & Ausflüge</button>
         <button class="mode-btn" id="mode-rest" onclick="setMode('restaurants')">🍽️ Essen & Trinken</button>
       </div>
 
@@ -497,7 +497,7 @@
       </div>
 
       <!-- Activity filters -->
-      <div id="filters-activities">
+      <div id="filters-activities" style="display:flex;flex-direction:column;gap:14px;">
         <div class="field">
           <label for="act-type">Aktivitätstyp</label>
           <select id="act-type">
@@ -511,20 +511,14 @@
             <option value="nature">Natur & Wandern</option>
           </select>
         </div>
-        <div class="fields-row" style="margin-bottom:0">
-          <div class="field">
-            <label for="env-type">Umgebung</label>
-            <select id="env-type">
-              <option value="any">Drinnen & Draußen</option>
-              <option value="outdoor">Nur Draußen</option>
-              <option value="indoor">Nur Drinnen</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="max-km">Entfernung: <span id="km-label">100 km</span></label>
-            <input type="range" id="max-km" min="10" max="200" step="10" value="100"
-              oninput="document.getElementById('km-label').textContent=this.value+' km'"/>
-          </div>
+        <div class="field" style="margin-top:6px;">
+          <label for="max-km">Entfernung: <span id="km-label">100 km</span></label>
+          <input type="range" id="max-km" min="10" max="200" step="10" value="100"
+            oninput="document.getElementById('km-label').textContent=this.value+' km'"/>
+        </div>
+        <div class="toggle-pills" id="act-toggles" style="margin-top:2px;">
+          <button class="toggle-pill" id="pill-outdoor" onclick="togglePill('pill-outdoor')">☀️ Outdoor</button>
+          <button class="toggle-pill" id="pill-indoor" onclick="togglePill('pill-indoor')">🏠 Indoor</button>
         </div>
       </div>
 
@@ -3082,13 +3076,415 @@ const LOCAL_VENUES = [
     "lat": 53.840,
     "lon": 14.620
   }
+  ,
+  {
+    "name": "Wasserschloss Unterwittelsbach (Sisi-Schloss)",
+    "location": "Aichach, Bayern",
+    "region": "inchenhofen",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "🏰",
+    "distanceKm": 5,
+    "driveMinutes": 8,
+    "suitableFor": "both",
+    "entranceFee": "5 € Erw. / Kinder kostenlos",
+    "openingHours": "Apr–Okt: Di–So 10–17 Uhr",
+    "durationHours": 1.5,
+    "googleRating": 4.3,
+    "reviewCount": 820,
+    "description": "Das romantische Wasserschloss Unterwittelsbach war einst Sommerresidenz von Herzog Max — dem Vater von Kaiserin Sisi. Jährliche Wechselausstellungen über das Leben der Wittelsbacher und Sisi laden zum Eintauchen in die bayerische Geschichte ein.",
+    "tips": ["Schöner Schlosspark zum Spazieren kostenlos zugänglich", "Kombination mit dem Wallfahrtsort Inchenhofen empfehlenswert", "Parkplatz direkt am Schloss"],
+    "lat": 48.448,
+    "lon": 11.018
+  },
+  {
+    "name": "Zoo Augsburg",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "animals",
+    "environment": "outdoor",
+    "emoji": "🦁",
+    "distanceKm": 30,
+    "driveMinutes": 28,
+    "suitableFor": "both",
+    "entranceFee": "15 € Erw. / 7 € Kinder",
+    "openingHours": "tägl. 9–18 Uhr (Winter bis 16:30 Uhr)",
+    "durationHours": 4,
+    "googleRating": 4.4,
+    "reviewCount": 6800,
+    "description": "Der Zoo Augsburg beherbergt über 1.250 Tiere in 300 Arten auf 22 Hektar — vom Elefanten über Giraffen bis zum Kolibri. Das 3 Hektar große Afrika-Panorama mit Zebras, Nashörnern und Straußen ist das Herzstück des weitläufigen Parks.",
+    "tips": ["Zoo-Bähnle für Kleinkinder sehr beliebt", "Großer Abenteuerspielplatz für Kinder", "Am Wochenende früh kommen — Parkplätze füllen sich schnell"],
+    "lat": 48.348,
+    "lon": 10.914
+  },
+  {
+    "name": "Therme Erding",
+    "location": "Erding, Bayern",
+    "region": "inchenhofen",
+    "category": "water",
+    "environment": "indoor",
+    "emoji": "🌊",
+    "distanceKm": 70,
+    "driveMinutes": 60,
+    "suitableFor": "both",
+    "entranceFee": "ab 29 € Erw. / ab 20 € Kinder (3h-Ticket)",
+    "openingHours": "tägl. 9–23 Uhr",
+    "durationHours": 5,
+    "googleRating": 4.4,
+    "reviewCount": 18500,
+    "description": "Europas größter Thermenbereich mit über 35 Rutschen, Wellenbad, Strömungskanal und riesigem Saunaparadies — ein ganzer Tag reicht kaum aus, alles zu erleben. Besonders an Regentagen ein absolutes Highlight für die ganze Familie.",
+    "tips": ["Online-Tickets kaufen spart Wartezeit an der Kasse", "Unter der Woche deutlich günstiger und leerer", "Ab 15 € Aufpreis auch Sauna-Bereich nutzbar"],
+    "lat": 48.290,
+    "lon": 11.887
+  },
+  {
+    "name": "LEGOLAND Deutschland",
+    "location": "Günzburg, Bayern",
+    "region": "inchenhofen",
+    "category": "theme",
+    "environment": "outdoor",
+    "emoji": "🎢",
+    "distanceKm": 75,
+    "driveMinutes": 65,
+    "suitableFor": "kids",
+    "entranceFee": "ab 49,50 € (Online-Frühbucher)",
+    "openingHours": "Apr–Nov: tägl. 10–18 Uhr (saisonal variabel)",
+    "durationHours": 8,
+    "googleRating": 4.3,
+    "reviewCount": 22000,
+    "description": "68 Attraktionen in 11 Themenwelten und über 58 Millionen LEGO-Steine — LEGOLAND Deutschland ist der Freizeitpark für Familien mit Kindern von 2 bis 12 Jahren. Das MINILAND mit berühmten deutschen Sehenswürdigkeiten in Lego begeistert auch Erwachsene.",
+    "tips": ["Online-Tickets bis zu 30% günstiger als an der Tageskasse", "Früh kommen — beliebteste Achterbahnen am Vormittag kürzeste Wartezeiten", "Ganztagsausflug einplanen, Picknick-Bereich vorhanden"],
+    "lat": 48.454,
+    "lon": 10.282
+  },
+  {
+    "name": "Inchenhofener Rossmoos (Naturlehrpfad)",
+    "location": "Inchenhofen, Bayern",
+    "region": "inchenhofen",
+    "category": "nature",
+    "environment": "outdoor",
+    "emoji": "🌿",
+    "distanceKm": 1,
+    "driveMinutes": 3,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos",
+    "openingHours": "jederzeit zugänglich",
+    "durationHours": 2,
+    "googleRating": 4.5,
+    "reviewCount": 210,
+    "description": "Das Inchenhofener Rossmoos ist mit 160 Hektar eines der größten Niedermoore im Landkreis — ein faszinierendes Naturparadies mit seltenen Pflanzen und Tieren. Geführte Erlebniswanderungen und Infotafeln erklären die einzigartige Moorlandschaft.",
+    "tips": ["7 km Rundwanderung von der Wallfahrtskirche durch das Moos bis zum Fuchsberg (485 m)", "Früh morgens beste Chancen auf Wildtiere", "Festes Schuhwerk empfohlen — Wege können feucht sein"],
+    "lat": 48.375,
+    "lon": 11.032
+  },
+  {
+    "name": "Wallfahrtskirche St. Leonhard Inchenhofen",
+    "location": "Inchenhofen, Bayern",
+    "region": "inchenhofen",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "⛪",
+    "distanceKm": 1,
+    "driveMinutes": 2,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos",
+    "openingHours": "tägl. geöffnet",
+    "durationHours": 1,
+    "googleRating": 4.6,
+    "reviewCount": 390,
+    "description": "Die gotische Wallfahrtskirche St. Leonhard ist das Herzstück von Inchenhofen und einer der bedeutendsten Wallfahrtsorte Bayerisch-Schwabens. Seit 1457 findet hier jährlich der traditionelle Leonhardiritt statt — ein einzigartiges bayerisches Volksbrauchtum.",
+    "tips": ["Leonhardiritt am Sonntag nächst dem 6. November ist ein einzigartiges Erlebnis", "Kombination mit Rossmoos-Wanderung ideal", "Kostenloser Parkplatz am Ortsrand"],
+    "lat": 48.373,
+    "lon": 11.034
+  },
+  {
+    "name": "Augsburg Altstadt & Fuggerei",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "🏛️",
+    "distanceKm": 30,
+    "driveMinutes": 28,
+    "suitableFor": "both",
+    "entranceFee": "Fuggerei: 8 € Erw. / 4 € Kinder",
+    "openingHours": "tägl. 9–20 Uhr (Apr–Sep), 10–17 Uhr (Okt–Mär)",
+    "durationHours": 3,
+    "googleRating": 4.6,
+    "reviewCount": 4200,
+    "description": "Augsburg ist eine der ältesten Städte Deutschlands mit beeindruckender Römergeschichte, Renaissance-Bauwerken und der Fuggerei — der weltweit ältesten noch bewohnten Sozialsiedlung aus dem Jahr 1516. UNESCO-Welterbe Wassermanagementsystem inklusive.",
+    "tips": ["Fuggerei unbedingt besuchen — Miete beträgt noch immer 88 Cent pro Jahr", "Augsburger Puppenkiste für Kinder ein Highlight", "Tram ab Hauptbahnhof direkt in die Altstadt"],
+    "lat": 48.371,
+    "lon": 10.898
+  },
+  {
+    "name": "Kletterwald Augsburg",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "adventure",
+    "environment": "outdoor",
+    "emoji": "🌳",
+    "distanceKm": 32,
+    "driveMinutes": 30,
+    "suitableFor": "both",
+    "entranceFee": "ab 17 € / Kinder ab 13 €",
+    "openingHours": "Apr–Okt: tägl. 10–18 Uhr (wetterabhängig)",
+    "durationHours": 3,
+    "googleRating": 4.5,
+    "reviewCount": 1100,
+    "description": "Der Kletterwald Augsburg im Siebentischwald bietet 14 Parcours in verschiedenen Schwierigkeitsgraden — vom Kinderbereich bis zu Profi-Strecken hoch in den Baumkronen. Adrenalin pur in naturbelassener Waldatmosphäre direkt vor den Toren Augsburgs.",
+    "tips": ["Vorab online reservieren — Wochenenden oft ausgebucht", "Festes Schuhwerk erforderlich, keine Sandalen", "Kinder ab 3 Jahren im Kinderparcours willkommen"],
+    "lat": 48.337,
+    "lon": 10.892
+  },
+  {
+    "name": "Botanischer Garten Augsburg",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "nature",
+    "environment": "outdoor",
+    "emoji": "🌺",
+    "distanceKm": 30,
+    "driveMinutes": 28,
+    "suitableFor": "both",
+    "entranceFee": "4 € Erw. / 1 € Kinder",
+    "openingHours": "tägl. 7:30–18 Uhr (Gewächshäuser 9–16 Uhr)",
+    "durationHours": 2,
+    "googleRating": 4.5,
+    "reviewCount": 2100,
+    "description": "Über 12.000 Pflanzenarten auf riesigem Freigelände mit Spielstationen und Erlebnispfad der Sinne — im Frühjahr verzaubert der Schmetterlingspavillon in der Pflanzenwelt unter Glas besonders Kinder. Direkt am Zoo Augsburg, ideal als Kombination.",
+    "tips": ["Schmetterlingshaus im Frühjahr (Mar–Mai) besonders schön", "Riesiger Spielplatz für Kinder im Freigelände", "Kombination mit Zoo Augsburg bietet Ganztagesausflug"],
+    "lat": 48.345,
+    "lon": 10.913
+  },
+  {
+    "name": "Schloss Blumenthal",
+    "location": "Aichach-Blumenthal, Bayern",
+    "region": "inchenhofen",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "🌸",
+    "distanceKm": 8,
+    "driveMinutes": 10,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos (Außengelände)",
+    "openingHours": "Außengelände jederzeit zugänglich",
+    "durationHours": 1.5,
+    "googleRating": 4.4,
+    "reviewCount": 340,
+    "description": "Das malerische Schloss Blumenthal bei Aichach liegt idyllisch eingebettet in die Hallertauer Hügellandschaft — mit wunderschönem Schlosspark und historischen Gebäuden. Ideal für eine entspannte Spazierrunde mit der Familie in gepflegter Atmosphäre.",
+    "tips": ["Schlossgastwirtschaft mit bayerischer Küche vor Ort", "Spielplatz im Park für Kinder", "Kombination mit Sisi-Schloss Unterwittelsbach empfehlenswert"],
+    "lat": 48.415,
+    "lon": 11.080
+  },
+  {
+    "name": "Naturerlebnispfad Aichach",
+    "location": "Aichach, Bayern",
+    "region": "inchenhofen",
+    "category": "nature",
+    "environment": "outdoor",
+    "emoji": "🦋",
+    "distanceKm": 7,
+    "driveMinutes": 10,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos",
+    "openingHours": "jederzeit zugänglich",
+    "durationHours": 1.5,
+    "googleRating": 4.3,
+    "reviewCount": 180,
+    "description": "Der Naturerlebnispfad Aichach führt durch abwechslungsreiche Landschaft entlang der Paar — mit Schaukeln, Balancierbalken und Infotafeln zu heimischen Tieren und Pflanzen. Ideal für Familien mit Kleinkindern auch mit Buggy gut befahrbar.",
+    "tips": ["Auch mit Kinderwagen/Buggy gut befahrbar", "Kombination mit Sisi-Schloss Unterwittelsbach möglich", "Kostenloser Parkplatz am Startpunkt"],
+    "lat": 48.449,
+    "lon": 11.133
+  },
+  {
+    "name": "Badesee Inchenhofen",
+    "location": "Inchenhofen, Bayern",
+    "region": "inchenhofen",
+    "category": "water",
+    "environment": "outdoor",
+    "emoji": "🏖️",
+    "distanceKm": 1,
+    "driveMinutes": 3,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos",
+    "openingHours": "jederzeit zugänglich (kein Bademeister)",
+    "durationHours": 3,
+    "googleRating": 4.2,
+    "reviewCount": 290,
+    "description": "Der Badesee Inchenhofen ist ein idyllischer Natursee mit großer Liegewiese, flachem Einstieg für Kinder und ruhiger Atmosphäre — ideal für einen entspannten Badetag ohne großen Trubel. Campingplatz direkt am See für Übernachtungsgäste.",
+    "tips": ["Kein Eintritt und kein Gedränge — perfekte Geheimtipp-Alternative zur vollen Therme", "Flacher Einstieg ideal für kleine Kinder", "Kiosk vor Ort in der Saison geöffnet"],
+    "lat": 48.379,
+    "lon": 11.039
+  },
+  {
+    "name": "Kloster Scheyern",
+    "location": "Scheyern, Bayern",
+    "region": "inchenhofen",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "🕌",
+    "distanceKm": 22,
+    "driveMinutes": 22,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos (Kirche & Klosterladen)",
+    "openingHours": "tägl. geöffnet",
+    "durationHours": 1.5,
+    "googleRating": 4.6,
+    "reviewCount": 1100,
+    "description": "Das Benediktinerkloster Scheyern ist eines der bedeutendsten Klöster Bayerns — mit beeindruckender Basilika, idyllischem Klostergarten und eigenem Klosterladen mit Bier, Honig und Kräuterprodukten. Ein Ort der Ruhe und Geschichte seit dem 12. Jahrhundert.",
+    "tips": ["Klosterbier aus eigener Brauerei im Klostergasthof probieren", "Klosterladen mit regionalen Produkten lohnt sich", "Sehr schöner Kreuzgang für stille Momente"],
+    "lat": 48.499,
+    "lon": 11.432
+  },
+  {
+    "name": "Wildpark Schlossweiher Inchenhofen",
+    "location": "Inchenhofen, Bayern",
+    "region": "inchenhofen",
+    "category": "animals",
+    "environment": "outdoor",
+    "emoji": "🦌",
+    "distanceKm": 2,
+    "driveMinutes": 4,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos",
+    "openingHours": "tägl. geöffnet",
+    "durationHours": 1,
+    "googleRating": 4.3,
+    "reviewCount": 150,
+    "description": "Der kleine Wildpark am Schlossweiher beherbergt heimische Tierarten wie Rehe, Wildschweine und verschiedene Vogelarten in naturnaher Umgebung — ein entspannter Ausflug direkt vor der Haustür besonders für Kleinkinder.",
+    "tips": ["Fütterung der Tiere macht Kindern großen Spaß", "Kombinierbar mit Spaziergang am Schlossweiher", "Kostenlos und barrierefrei zugänglich"],
+    "lat": 48.374,
+    "lon": 11.037
+  },
+  {
+    "name": "Eisstadion Augsburg (Curt-Frenzel-Stadion)",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "adventure",
+    "environment": "indoor",
+    "emoji": "⛸️",
+    "distanceKm": 30,
+    "driveMinutes": 28,
+    "suitableFor": "both",
+    "entranceFee": "ab 6 € Eislaufen / Schlittschuhverleih extra",
+    "openingHours": "Okt–Mär: tägl. Publikumslauf (Zeiten variieren)",
+    "durationHours": 2,
+    "googleRating": 4.2,
+    "reviewCount": 890,
+    "description": "Das Curt-Frenzel-Stadion in Augsburg bietet regelmäßige Publikumsläufe auf professionellem Eis — ideal für Anfänger und Profis gleichermaßen. Schlittschuhe können vor Ort ausgeliehen werden, Kaffee und Snacks gibt es in der Eishalle.",
+    "tips": ["Öffnungszeiten für Publikumslauf vorab auf der Website prüfen", "Schlittschuhverleih vor Ort verfügbar", "Nur in der Wintersaison Oktober bis März geöffnet"],
+    "lat": 48.360,
+    "lon": 10.886
+  },
+  {
+    "name": "Aichach Altstadt & Wittelsbacher-Museum",
+    "location": "Aichach, Bayern",
+    "region": "inchenhofen",
+    "category": "museum",
+    "environment": "indoor",
+    "emoji": "🏺",
+    "distanceKm": 7,
+    "driveMinutes": 10,
+    "suitableFor": "both",
+    "entranceFee": "3 € Erw. / Kinder kostenlos",
+    "openingHours": "Di–So 14–17 Uhr",
+    "durationHours": 1.5,
+    "googleRating": 4.2,
+    "reviewCount": 120,
+    "description": "Die historische Altstadt Aichach mit dem Wittelsbacher-Museum erzählt die Geschichte des bedeutendsten bayerischen Herrschergeschlechts von der Stammburg bis zur Kaiserin Sisi. Gemütliche Innenstadt mit Cafés und Biergärten zum Verweilen.",
+    "tips": ["Museum gut kombinierbar mit Sisi-Schloss Unterwittelsbach", "Schöner Stadtspaziergang durch die historische Altstadt", "Mehrere gute Cafés in der Innenstadt"],
+    "lat": 48.449,
+    "lon": 11.135
+  },
+  {
+    "name": "Kanu & SUP auf der Paar",
+    "location": "Aichach, Bayern",
+    "region": "inchenhofen",
+    "category": "water",
+    "environment": "outdoor",
+    "emoji": "🛶",
+    "distanceKm": 7,
+    "driveMinutes": 10,
+    "suitableFor": "both",
+    "entranceFee": "ab 25 € Kanuverleih (je nach Anbieter)",
+    "openingHours": "Mai–Sep: tägl. (Verleih je nach Anbieter)",
+    "durationHours": 3,
+    "googleRating": 4.4,
+    "reviewCount": 180,
+    "description": "Die Paar lädt zum gemütlichen Kajakfahren und Stand-Up-Paddling ein — ruhiges Gewässer mit schöner Natur, ideal auch für Anfänger und Familien. Mehrere Verleihanbieter in der Region bieten Boote für Tagestouren an.",
+    "tips": ["Ruhiges Gewässer — auch für Anfänger und Kinder geeignet", "Verleih am besten vorab reservieren", "Beste Zeit: Mai bis August bei ruhigem Wasserstand"],
+    "lat": 48.451,
+    "lon": 11.139
+  },
+  {
+    "name": "Friedberger See",
+    "location": "Friedberg, Bayern",
+    "region": "inchenhofen",
+    "category": "water",
+    "environment": "outdoor",
+    "emoji": "🌊",
+    "distanceKm": 20,
+    "driveMinutes": 20,
+    "suitableFor": "both",
+    "entranceFee": "Kostenlos",
+    "openingHours": "jederzeit zugänglich",
+    "durationHours": 3,
+    "googleRating": 4.3,
+    "reviewCount": 1400,
+    "description": "Der Friedberger See ist ein beliebter Baggersee westlich von Augsburg mit Sandstrand, Liegewiesen und Beachvolleyballfeldern — an heißen Sommertagen ein perfektes Ausflugsziel. Gastronomie und Kiosk direkt am See.",
+    "tips": ["An Wochenenden früh kommen — Parkplätze füllen sich schnell", "Beachvolleyball-Felder vorhanden", "Kiosk mit Eis und Snacks direkt am Strand"],
+    "lat": 48.352,
+    "lon": 10.969
+  },
+  {
+    "name": "Planetarium Augsburg",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "museum",
+    "environment": "indoor",
+    "emoji": "🔭",
+    "distanceKm": 30,
+    "driveMinutes": 28,
+    "suitableFor": "both",
+    "entranceFee": "ab 8 € Erw. / ab 5 € Kinder",
+    "openingHours": "Do–So Vorstellungen (Zeiten variieren)",
+    "durationHours": 1.5,
+    "googleRating": 4.5,
+    "reviewCount": 760,
+    "description": "Das Planetarium Augsburg bietet faszinierende Vorstellungen unter der Sternenkuppel — von Kinderprogrammen bis hin zu Lasershow-Events. Ideal für Schlechtwettertage und besonders für Kinder ein unvergessliches Erlebnis.",
+    "tips": ["Programm und Zeiten vorab online prüfen", "Kinderprogramme ab 5 Jahren besonders empfehlenswert", "Laserkonzerte freitags und samstags abends für Jugendliche"],
+    "lat": 48.369,
+    "lon": 10.897
+  },
+  {
+    "name": "Augsburger Puppenkiste",
+    "location": "Augsburg, Bayern",
+    "region": "inchenhofen",
+    "category": "culture",
+    "environment": "indoor",
+    "emoji": "🎭",
+    "distanceKm": 30,
+    "driveMinutes": 28,
+    "suitableFor": "kids",
+    "entranceFee": "ab 10 € (Vorstellungsticket)",
+    "openingHours": "Vorstellungen Mi–So (Zeiten variieren)",
+    "durationHours": 2,
+    "googleRating": 4.7,
+    "reviewCount": 2900,
+    "description": "Die weltberühmte Augsburger Puppenkiste ist eine Institution — kasperletheater-Tradition seit 1948, bekannt durch Jim Knopf und Urmel aus dem Eis. Das angeschlossene Museum zeigt die Original-Puppen und die Geschichte des Marionettentheaters.",
+    "tips": ["Tickets unbedingt vorab online buchen — Vorstellungen oft Monate im Voraus ausverkauft", "Museum auch ohne Vorstellung besuchenswert", "Für Kinder ab 4 Jahren geeignet"],
+    "lat": 48.369,
+    "lon": 10.897
+  }
 ]
 ;
 const LOCAL_ORIGIN = { lat: 48.5268, lon: 11.5063, name: 'Pfaffenhofen an der Ilm' };
 const LOCAL_RADIUS_KM = 15; // If user's location is within 15km of Pfaffenhofen → use local DB
 
 // ── Key management ──────────────────────────────────────────────
-const KEY_STORE = 'wf_api_key_v2';
+const KEY_STORE = 'wf_app_password_v1';
+const WORKER_URL = 'https://rauszeit.christian-maier-88.workers.dev/api/venues';
 const FAV_STORE = 'wf_favorites_v1';
 const VISITED_STORE = 'wf_visited_v1';
 const LAST_SEARCH_STORE = 'wf_last_search_v1';
@@ -3222,8 +3618,7 @@ function durationStr(h) {
 
 // ── Spot search (direct venue lookup) ────────────────────────────
 async function searchSpot() {
-  const apiKey = getKey();
-  if (!apiKey) { showError('Bitte API-Schlüssel oben eingeben.'); document.getElementById('api-banner').style.display='flex'; return; }
+
   const spotName = document.getElementById('spot-input').value.trim();
   if (!spotName) { showError('Bitte einen Ort oder eine Aktivität eingeben.'); return; }
   const location = document.getElementById('location').value.trim() || 'Deutschland';
@@ -3264,9 +3659,9 @@ Antworte NUR mit einem JSON-Objekt, kein Markdown, keine Erklärung:
 }`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(WORKER_URL, {
       method:"POST",
-      headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      headers:{"Content-Type":"application/json","X-App-Password":apiKey},
       body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1200,messages:[{role:"user",content:prompt}]})
     });
     if (!res.ok) throw new Error(`API Fehler ${res.status}`);
@@ -3499,9 +3894,9 @@ Antworte NUR mit einem JSON-Array, kein Markdown.
 Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|animals|water|culture|museum|theme|nature|other","environment":"indoor|outdoor","emoji":"Emoji","distanceKm":45,"driveMinutes":38,"suitableFor":"couple|kids|both","entranceFee":"Preis","openingHours":"Zeiten","durationHours":3,"googleRating":4.2,"reviewCount":1500,"description":"2 motivierende Sätze","tips":["Tipp 1","Tipp 2","Tipp 3"],"lat":48.1,"lon":11.5}`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(WORKER_URL, {
       method:"POST",
-      headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      headers:{"Content-Type":"application/json","X-App-Password":apiKey},
       body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4096,messages:[{role:"user",content:prompt}]})
     });
     if (!res.ok) throw new Error(`API Fehler ${res.status}`);
@@ -3596,17 +3991,20 @@ function restoreLastSearch() {
     }
     if (s.type) document.getElementById('trip-type').value = s.type;
     if (s.actType) document.getElementById('act-type').value = s.actType;
-    if (s.envType) document.getElementById('env-type').value = s.envType;
+    if (s.envType) {
+      if (s.envType === 'outdoor') { document.getElementById('pill-outdoor')?.classList.add('on'); }
+      else if (s.envType === 'indoor') { document.getElementById('pill-indoor')?.classList.add('on'); }
+    }
     if (s.maxKm) { document.getElementById('max-km').value = s.maxKm; document.getElementById('km-label').textContent = s.maxKm + ' km'; }
   } catch(_) {}
 }
 
 function saveKey() {
   const val = document.getElementById('api-key-input').value.trim();
-  if (!val.startsWith('sk-')) { showError('Schlüssel muss mit sk-ant-… beginnen'); return; }
+  if (!val) { showError('Bitte Passwort eingeben.'); return; }
   localStorage.setItem(KEY_STORE, val);
   document.getElementById('key-saved').style.display = 'flex';
-  document.getElementById('api-key-input').value = '●'.repeat(20);
+  document.getElementById('api-key-input').value = '●'.repeat(val.length);
   setTimeout(() => document.getElementById('api-banner').style.display = 'none', 1200);
 }
 function getKey() { return localStorage.getItem(KEY_STORE) || ''; }
@@ -3742,6 +4140,11 @@ function setMode(mode) {
 
   // Show/hide filter rows
   document.getElementById('filters-activities').style.display = isRest ? 'none' : '';
+  // Reset env pills on mode switch
+  if (!isRest) {
+    document.getElementById('pill-outdoor')?.classList.remove('on');
+    document.getElementById('pill-indoor')?.classList.remove('on');
+  }
   document.getElementById('filters-restaurants').style.display = isRest ? '' : 'none';
   document.getElementById('rest-toggles').style.display = isRest ? 'flex' : 'none';
 
@@ -4155,6 +4558,7 @@ function updateCard(idx, date) {
 const KNOWN_LOCATIONS = [
   { label: 'Pfaffenhofen an der Ilm', region: 'pfaffenhofen', keywords: ['pfaffenhofen','85276'] },
   { label: 'Miedzywodzie (Misdroy)',   region: 'miedzywodzie', keywords: ['miedzy','misdroy','miedzyw','72-014'] },
+  { label: 'Inchenhofen',             region: 'inchenhofen',  keywords: ['inchenhofen','86570'] },
 ];
 
 function detectLocalRegion(locationStr) {
@@ -4232,7 +4636,12 @@ function readSearchParams() {
     type:          document.getElementById('trip-type').value,
     isRest,
     actType:       isRest ? 'restaurant' : document.getElementById('act-type').value,
-    envType:       isRest ? 'any'        : document.getElementById('env-type').value,
+    envType:       isRest ? 'any' : (
+                     document.getElementById('pill-outdoor')?.classList.contains('on') &&
+                     !document.getElementById('pill-indoor')?.classList.contains('on') ? 'outdoor' :
+                     document.getElementById('pill-indoor')?.classList.contains('on') &&
+                     !document.getElementById('pill-outdoor')?.classList.contains('on') ? 'indoor' : 'any'
+                   ),
     maxKm:         isRest ? parseInt(document.getElementById('max-km-rest').value)
                           : parseInt(document.getElementById('max-km').value),
     restCuisine:   isRest ? document.getElementById('rest-cuisine').value    : 'any',
@@ -4453,9 +4862,9 @@ async function findActivities() {
       }
     }, 3500);
 
-    const venuesRes = await fetch("https://api.anthropic.com/v1/messages", {
+    const venuesRes = await fetch(WORKER_URL, {
       method: "POST",
-      headers: { "Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true" },
+      headers: { "Content-Type":"application/json", "X-App-Password": apiKey },
       body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:4096, stream:true, messages:[{ role:"user", content:buildVenuesPrompt(p) }] })
     });
 
@@ -4490,7 +4899,7 @@ async function findActivities() {
     showError(msg);
     document.getElementById('activity-grid').innerHTML =
       `<div class="state-error"><div class="big-icon">⚠️</div><p>${msg}</p></div>`;
-    if (e.message?.includes('401')) { localStorage.removeItem(KEY_STORE); document.getElementById('api-banner').style.display='flex'; }
+    if (e.message?.includes('401') || e.message?.includes('Falsches')) { localStorage.removeItem(KEY_STORE); document.getElementById('api-banner').style.display='flex'; showError('Falsches Passwort — bitte erneut eingeben.'); }
     clearInterval(statusInterval);
     setProgress(0);
   } finally {
