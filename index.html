@@ -475,7 +475,7 @@
 
       <!-- Common fields -->
       <div class="field">
-        <label for="location">Startort</label>
+        <label for="location">Standort</label>
         <div class="autocomplete-wrap">
           <input type="text" id="location" placeholder="z.B. Pfaffenhofen, Miedzywodzie…" value="Pfaffenhofen an der Ilm, Deutschland" autocomplete="off" oninput="onLocationInput(this.value)" onblur="setTimeout(closeAutocomplete,150)"/>
           <div class="autocomplete-list" id="autocomplete-list" style="display:none"></div>
@@ -501,7 +501,7 @@
         <div class="field">
           <label for="act-type">Aktivitätstyp</label>
           <select id="act-type">
-            <option value="any">Alle Typen</option>
+            <option value="any" selected>Alle Typen</option>
             <option value="adventure">Abenteuer & Outdoor</option>
             <option value="animals">Zoos & Tiere</option>
             <option value="water">Wasserparks & Seen</option>
@@ -4161,11 +4161,9 @@ function detectLocalRegion(locationStr) {
   const lower = locationStr.toLowerCase().trim();
   for (const loc of KNOWN_LOCATIONS) {
     if (loc.keywords.some(k => lower.includes(k))) {
-      console.log(`📍 "${locationStr}" → Region: ${loc.region}`);
       return loc.region;
     }
   }
-  console.log(`📍 "${locationStr}" → Claude API`);
   return null;
 }
 
@@ -4225,129 +4223,87 @@ function loadMoreLocalDB(maxKm, actType, envType, whoFor, excludeNames, venuePoo
 }
 
 // ── Main search ───────────────────────────────────────────────────
-async function findActivities() {
-  const apiKey = getKey();
-  if (!apiKey) { showError('Bitte API-Schlüssel oben eingeben und speichern.'); document.getElementById('api-banner').style.display='flex'; return; }
-  const location = document.getElementById('location').value.trim();
-  const date     = document.getElementById('trip-date').value;
-  const type     = document.getElementById('trip-type').value;
-  const isRest   = appMode === 'restaurants';
-  const actType  = isRest ? 'restaurant' : document.getElementById('act-type').value;
-  const envType  = isRest ? 'any' : document.getElementById('env-type').value;
-  const maxKm    = isRest ? parseInt(document.getElementById('max-km-rest').value) : parseInt(document.getElementById('max-km').value);
-  const restCuisine    = isRest ? document.getElementById('rest-cuisine').value : 'any';
-  const restPrice      = isRest ? document.getElementById('rest-price').value : 'any';
-  const restTerrace    = isRest && document.getElementById('pill-terrace')?.classList.contains('on');
-  const restPlayground = isRest && document.getElementById('pill-playground')?.classList.contains('on');
-  const restNoReserv   = isRest && document.getElementById('pill-noreserv')?.classList.contains('on');
-  if (!location) { showError('Bitte Startort eingeben.'); return; }
-  if (!date)     { showError('Bitte Datum auswählen.'); return; }
+// ── Liest Suchparameter aus dem Formular ────────────────────────
+function readSearchParams() {
+  const isRest = appMode === 'restaurants';
+  return {
+    location:      document.getElementById('location').value.trim(),
+    date:          document.getElementById('trip-date').value,
+    type:          document.getElementById('trip-type').value,
+    isRest,
+    actType:       isRest ? 'restaurant' : document.getElementById('act-type').value,
+    envType:       isRest ? 'any'        : document.getElementById('env-type').value,
+    maxKm:         isRest ? parseInt(document.getElementById('max-km-rest').value)
+                          : parseInt(document.getElementById('max-km').value),
+    restCuisine:   isRest ? document.getElementById('rest-cuisine').value    : 'any',
+    restPrice:     isRest ? document.getElementById('rest-price').value      : 'any',
+    restTerrace:   isRest && document.getElementById('pill-terrace')?.classList.contains('on'),
+    restPlayground:isRest && document.getElementById('pill-playground')?.classList.contains('on'),
+    restNoReserv:  isRest && document.getElementById('pill-noreserv')?.classList.contains('on'),
+  };
+}
 
-  searchDate = date;
-  searchAborted = false;
-  const btn = document.getElementById('search-btn');
-  btn.disabled=true; btn.textContent='Suche läuft…';
-  document.getElementById('cancel-btn').style.display = 'flex';
-  document.getElementById('detail-panel').className='detail-panel';
-  document.getElementById('fav-panel').classList.remove('open');
-  activeIdx=null;
-  document.getElementById('results-header').style.display='none';
-  activities=[];
-  setProgress(10);
-
-  // ── Local DB (outside try/catch — errors must be visible) ───────
+// ── Fragt lokale DB ab und rendert Ergebnisse ────────────────────
+// Gibt true zurück wenn lokale Ergebnisse gefunden und gerendert wurden
+function queryAndRenderLocalDB(p, btn) {
+  const { location, date, type, isRest, actType, envType, maxKm,
+          restCuisine, restPrice, restTerrace, restPlayground, restNoReserv } = p;
   const t0 = Date.now();
   const maxKmNum = Number(maxKm);
   const localRegion = detectLocalRegion(location);
-  console.log('📍 Location:', JSON.stringify(location), '| region:', localRegion, '| maxKm:', maxKmNum);
-  if (localRegion && Array.isArray(LOCAL_VENUES) && LOCAL_VENUES.length > 0) {
-    // Filter venue pool to current region
-    const regionVenues = LOCAL_VENUES.filter(v =>
-      v.region === localRegion || (!v.region && localRegion === 'pfaffenhofen')
-    );
-    console.log('🗂 Region venues:', regionVenues.length);
-    const dbResult = searchLocalDB(maxKmNum, actType, envType, type, regionVenues);
-    let { initial: localInitial, remainder: localRemainder } = dbResult;
+  if (!localRegion || !Array.isArray(LOCAL_VENUES) || !LOCAL_VENUES.length) return false;
 
-    // Apply restaurant-specific filters to both sets
-    if (isRest) {
-      const restFilter = arr => arr
-        .filter(r => restCuisine === 'any' || r.cuisine === restCuisine)
-        .filter(r => restPrice   === 'any' || r.priceRange === restPrice)
-        .filter(r => !restTerrace    || r.terrace)
-        .filter(r => !restPlayground || r.playground)
-        .filter(r => !restNoReserv   || !r.reservationNeeded);
-      localInitial   = restFilter(localInitial);
-      localRemainder = restFilter(localRemainder);
-    }
+  const regionVenues = LOCAL_VENUES.filter(v =>
+    v.region === localRegion || (!v.region && localRegion === 'pfaffenhofen')
+  );
+  const dbResult = searchLocalDB(maxKmNum, actType, envType, type, regionVenues);
+  let { initial: localInitial, remainder: localRemainder } = dbResult;
 
-    const totalLocal = localInitial.length + localRemainder.length;
-    console.log('📦 Local results:', totalLocal, '(showing', localInitial.length, '+ ', localRemainder.length, 'more) in', (Date.now()-t0)+'ms');
-
-    if (localInitial.length > 0 || totalLocal > 0) {
-      activities = [...localInitial, ...localRemainder]; // full set stored
-      if (appMode === 'restaurants') {
-        renderRestaurantGrid(localInitial, date, location, maxKmNum);
-        // "Load more" for restaurants
-        if (localRemainder.length > 0) appendLocalLoadMoreBtn(date, 9, localRemainder.length);
-      } else {
-        renderGrid(localInitial, date, location, type, actType, maxKmNum);
-        if (localRemainder.length > 0) appendLocalLoadMoreBtn(date, 9, localRemainder.length);
-      }
-      // Update title to show total
-      document.getElementById('results-title').textContent =
-        `${totalLocal} ${appMode==='restaurants'?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
-
-      const header = document.getElementById('results-header');
-      const badge = document.createElement('span');
-      badge.style.cssText = 'font-size:11px;background:#eaf3de;color:#3b6d11;padding:3px 9px;border-radius:10px;font-weight:500;margin-left:8px;';
-      badge.textContent = '⚡ Lokale Datenbank';
-      header.querySelector('h2').appendChild(badge);
-      setProgress(100); setTimeout(()=>setProgress(0), 400);
-      document.getElementById('cancel-btn').style.display = 'none';
-      btn.disabled=false; btn.textContent=isRest?'Restaurants finden':'Aktivitäten finden';
-      saveLastSearch(location, date, type, actType, envType, maxKmNum);
-      lastSearchParams = { location, date, type, actType, envType, maxKm: maxKmNum, region: localRegion };
-      console.log('✅ Done in', (Date.now()-t0)+'ms');
-      return;
-    }
-    console.log('⚠️ Local DB 0 results — Claude API fallback');
+  if (isRest) {
+    const restFilter = arr => arr
+      .filter(r => restCuisine === 'any' || r.cuisine === restCuisine)
+      .filter(r => restPrice   === 'any' || r.priceRange === restPrice)
+      .filter(r => !restTerrace    || r.terrace)
+      .filter(r => !restPlayground || r.playground)
+      .filter(r => !restNoReserv   || !r.reservationNeeded);
+    localInitial   = restFilter(localInitial);
+    localRemainder = restFilter(localRemainder);
   }
 
-  try {
-    saveLastSearch(location, date, type, actType, envType, maxKm);
-    lastSearchParams = { location, date, type, actType, envType, maxKm };
-    loadMorePage = 1;
+  const totalLocal = localInitial.length + localRemainder.length;
+  if (!totalLocal) return false;
 
-    // ── Claude API fallback (non-Pfaffenhofen or local DB empty) ──
-    // 1. Skeletons sofort anzeigen (nicht überschreiben!)
-    showSkeletons(9);
-    document.getElementById('results-header').style.display = 'flex';
-    document.getElementById('results-title').textContent = isRest ? 'Restaurants werden gesucht…' : 'Aktivitäten werden gesucht…';
-    document.getElementById('results-meta').textContent = '📍 Standort wird analysiert…';
+  activities = [...localInitial, ...localRemainder];
+  if (isRest) {
+    renderRestaurantGrid(localInitial, date, location, maxKmNum);
+    if (localRemainder.length > 0) appendLocalLoadMoreBtn(date, 9, localRemainder.length);
+  } else {
+    renderGrid(localInitial, date, location, type, actType, maxKmNum);
+    if (localRemainder.length > 0) appendLocalLoadMoreBtn(date, 9, localRemainder.length);
+  }
 
-    // 2. Progress-Bar langsam animieren während gewartet wird
-    setProgress(15);
-    const statusMessages = [
-      { pct: 25, msg: '🔍 Suche läuft…' },
-      { pct: 40, msg: '🗺️ Umgebung wird erkundet…' },
-      { pct: 55, msg: '✨ Empfehlungen werden zusammengestellt…' },
-      { pct: 70, msg: '📋 Fast fertig…' },
-    ];
-    let statusIdx = 0;
-    const statusInterval = setInterval(() => {
-      if (statusIdx < statusMessages.length) {
-        const { pct, msg } = statusMessages[statusIdx++];
-        setProgress(pct);
-        document.getElementById('results-meta').textContent = msg;
-      }
-    }, 3500);
+  document.getElementById('results-title').textContent =
+    `${totalLocal} ${isRest?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
+  const badge = document.createElement('span');
+  badge.style.cssText = 'font-size:11px;background:#e8f2e8;color:#2c5f2e;padding:3px 9px;border-radius:10px;font-weight:500;margin-left:8px;';
+  badge.textContent = '⚡ Lokale Datenbank';
+  document.getElementById('results-header').querySelector('h2').appendChild(badge);
 
-    const whoDesc  = type==='couple'?'Paare ohne Kinder':type==='kids'?'Familien mit Kindern':'Paare und Familien';
-    const actDesc  = actType==='any'?'gemischte Auswahl (Abenteuer, Natur, Kultur, Tiere, Wasser, Museen, Freizeitparks)':actType;
-    const envDesc  = envType==='indoor'?'nur Indoor-Aktivitäten':envType==='outdoor'?'nur Outdoor-Aktivitäten':'Indoor und Outdoor';
+  saveLastSearch(location, date, type, actType, envType, maxKmNum);
+  lastSearchParams = { location, date, type, actType, envType, maxKm: maxKmNum, region: localRegion };
+  setProgress(100); setTimeout(()=>setProgress(0), 400);
+  document.getElementById('cancel-btn').style.display = 'none';
+  btn.disabled=false; btn.textContent=isRest?'Restaurants finden':'Aktivitäten finden';
+  return true;
+}
 
-    const venuesPrompt = `Du bist ein Freizeitexperte für Deutschland und Österreich.
+// ── Baut den Claude-Prompt ───────────────────────────────────────
+function buildVenuesPrompt(p) {
+  const { location, type, actType, envType, maxKm } = p;
+  const whoDesc = type==='couple'?'Paare ohne Kinder':type==='kids'?'Familien mit Kindern':'Paare und Familien';
+  const actDesc = actType==='any'?'gemischte Auswahl (Abenteuer, Natur, Kultur, Tiere, Wasser, Museen, Freizeitparks)':actType;
+  const envDesc = envType==='indoor'?'nur Indoor-Aktivitäten':envType==='outdoor'?'nur Outdoor-Aktivitäten':'Indoor und Outdoor';
+  return `Du bist ein Freizeitexperte für Deutschland und Österreich.
 Nenne exakt 9 real existierende Freizeitaktivitäten und Ausflugsziele in maximal ${maxKm} km Fahrtstrecke von "${location}" (Deutschland).
 Zielgruppe: ${whoDesc}. Aktivitätstyp: ${actDesc}. ${envDesc}.
 
@@ -4358,12 +4314,151 @@ Jedes Objekt:
 {"name":"Exakter Venue-Name","location":"Stadt, Region","category":"adventure|animals|water|culture|museum|theme|nature|other","environment":"indoor|outdoor","emoji":"1 Emoji","distanceKm":45,"driveMinutes":38,"suitableFor":"couple|kids|both","entranceFee":"Kostenlos oder €15 Erw./€8 Kids","openingHours":"tägl. 9–18 Uhr","durationHours":3,"googleRating":4.3,"reviewCount":2800,"description":"2 motivierende Sätze","tips":["Tipp 1","Tipp 2","Tipp 3"],"lat":48.123,"lon":11.456}
 
 durationHours = realistisch empfohlene Aufenthaltsdauer in Stunden (z.B. Zoo=4, Museum=2, Kletterpark=3, Wasserpark=5). Ganze oder halbe Stunden.`;
+}
+
+// ── Streaming-Render: rendert Venues aus dem SSE-Stream ──────────
+async function streamAndRenderVenues(venuesRes, p, statusInterval) {
+  const { location, date, type, actType, maxKm, isRest } = p;
+  const grid = document.getElementById('activity-grid');
+  document.getElementById('results-header').style.display = 'flex';
+  document.getElementById('results-title').textContent = isRest ? 'Restaurants werden geladen…' : 'Aktivitäten werden geladen…';
+  document.getElementById('results-meta').textContent = '';
+
+  // Hilfsfunktion: rendert eine neue Karte
+  let rendered = 0;
+  let skeletonsCleared = false;
+  const renderOneVenue = (venue) => {
+    activities.push(venue);
+    const cardHtml = buildActivityCard(venue, rendered, date, location, type, actType, maxKm);
+    if (!skeletonsCleared) { grid.innerHTML = ''; skeletonsCleared = true; }
+    grid.insertAdjacentHTML('beforeend', cardHtml);
+    rendered++;
+    setProgress(Math.min(30 + rendered * 7, 90));
+    document.getElementById('results-title').textContent =
+      `${rendered} ${isRest?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
+  };
+
+  // Fallback: kein Streaming möglich (file:// oder ältere Browser)
+  if (!venuesRes.body?.getReader) {
+    const venuesData = await venuesRes.json();
+    robustParse(venuesData.content.map(b=>b.text||'').join('')).forEach(renderOneVenue);
+    return rendered;
+  }
+
+  // Streaming: Venues erscheinen eine nach der anderen
+  const reader = venuesRes.body.getReader();
+  const decoder = new TextDecoder();
+  let sseBuffer = '';
+  let buffer = '';
+
+  const tryParseBuffer = () => {
+    const trimmed = buffer.trim();
+    if (!trimmed) return;
+    const partial = '[' + trimmed.replace(/^\[/, '').replace(/,?\s*$/, '') + ']';
+    try {
+      const parsed = JSON.parse(partial);
+      if (Array.isArray(parsed) && parsed.length > rendered) {
+        parsed.slice(rendered).filter(v => v.name && v.category).forEach(renderOneVenue);
+      }
+    } catch(e) { /* Buffer noch unvollständig — kein Problem */ }
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (searchAborted) { reader.cancel(); return rendered; }
+    const chunk = decoder.decode(value, { stream: true });
+    const lines = (sseBuffer + chunk).split('\n');
+    sseBuffer = lines.pop();
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (!data || data === '[DONE]') continue;
+      try {
+        const evt = JSON.parse(data);
+        if (evt.type === 'content_block_delta' && evt.delta?.text) {
+          buffer += evt.delta.text;
+          tryParseBuffer();
+        }
+      } catch(e) { /* ungültiges SSE-Event */ }
+    }
+  }
+
+  // Letzten Buffer-Rest parsen
+  tryParseBuffer();
+
+  // Letzter Fallback: robustParse wenn gar nichts gerendert
+  if (rendered === 0 && buffer.trim().length > 0) {
+    robustParse(buffer).forEach(renderOneVenue);
+  }
+
+  grid.querySelectorAll('.skeleton-card').forEach(s => s.remove());
+  return rendered;
+}
+
+// ── Hauptfunktion: orchestriert nur noch den Ablauf ─────────────
+async function findActivities() {
+  const apiKey = getKey();
+  if (!apiKey) {
+    showError('Bitte API-Schlüssel oben eingeben und speichern.');
+    document.getElementById('api-banner').style.display='flex';
+    return;
+  }
+
+  const p = readSearchParams();
+  if (!p.location) { showError('Bitte Standort eingeben.'); return; }
+  if (!p.date)     { showError('Bitte Datum auswählen.'); return; }
+
+  // UI zurücksetzen
+  searchDate = p.date;
+  searchAborted = false;
+  activities = [];
+  activeIdx = null;
+  const btn = document.getElementById('search-btn');
+  btn.disabled=true; btn.textContent='Suche läuft…';
+  document.getElementById('cancel-btn').style.display = 'flex';
+  document.getElementById('detail-panel').className='detail-panel';
+  document.getElementById('fav-panel').classList.remove('open');
+  document.getElementById('results-header').style.display='none';
+  setProgress(10);
+
+  // 1. Lokale DB versuchen (schnell, kein API-Call)
+  if (queryAndRenderLocalDB(p, btn)) return;
+
+  // 2. Claude API (Streaming)
+  let statusInterval;
+  try {
+    saveLastSearch(p.location, p.date, p.type, p.actType, p.envType, p.maxKm);
+    lastSearchParams = { ...p };
+    loadMorePage = 1;
+
+    showSkeletons(9);
+    document.getElementById('results-header').style.display = 'flex';
+    document.getElementById('results-title').textContent = p.isRest ? 'Restaurants werden gesucht…' : 'Aktivitäten werden gesucht…';
+    document.getElementById('results-meta').textContent = '📍 Standort wird analysiert…';
+    setProgress(15);
+
+    let statusIdx = 0;
+    const statusMessages = [
+      { pct: 25, msg: '🔍 Suche läuft…' },
+      { pct: 40, msg: '🗺️ Umgebung wird erkundet…' },
+      { pct: 55, msg: '✨ Empfehlungen werden zusammengestellt…' },
+      { pct: 70, msg: '📋 Fast fertig…' },
+    ];
+    statusInterval = setInterval(() => {
+      if (statusIdx < statusMessages.length) {
+        const { pct, msg } = statusMessages[statusIdx++];
+        setProgress(pct);
+        document.getElementById('results-meta').textContent = msg;
+      }
+    }, 3500);
 
     const venuesRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST",
-      headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4096,stream:true,messages:[{role:"user",content:venuesPrompt}]})
+      method: "POST",
+      headers: { "Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true" },
+      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:4096, stream:true, messages:[{ role:"user", content:buildVenuesPrompt(p) }] })
     });
+
     if (!venuesRes.ok) {
       const err = await venuesRes.json().catch(()=>({}));
       const msg = err?.error?.message || `API Fehler ${venuesRes.status}`;
@@ -4371,145 +4466,37 @@ durationHours = realistisch empfohlene Aufenthaltsdauer in Stunden (z.B. Zoo=4, 
       throw new Error(msg);
     }
     if (searchAborted) return;
+
     clearInterval(statusInterval);
     setProgress(30);
 
-    // ── Streaming oder Fallback je nach Verfügbarkeit ──
-    const grid = document.getElementById('activity-grid');
-    document.getElementById('results-header').style.display = 'flex';
-    document.getElementById('results-title').textContent = isRest ? 'Restaurants werden geladen…' : 'Aktivitäten werden geladen…';
-    document.getElementById('results-meta').textContent = '';
-
-    // Fallback für file:// oder Browser ohne Streaming-Support
-    if (!venuesRes.body || !venuesRes.body.getReader) {
-      console.log('⚠️ Streaming nicht verfügbar — Fallback auf JSON');
-      const venuesData = await venuesRes.json();
-      const rawVenues = robustParse(venuesData.content.map(b=>b.text||'').join(''));
-      if (!rawVenues.length) {
-        grid.innerHTML = `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
-        document.getElementById('results-header').style.display='none';
-        setProgress(100); setTimeout(()=>setProgress(0),600);
-        return;
-      }
-      activities = rawVenues;
-      renderGrid(activities, date, location, type, actType, maxKm);
-      appendLoadMoreBtn(date);
-      setProgress(100); setTimeout(()=>setProgress(0),600);
-      return;
-    }
-
-    let skeletonsCleared = false;
-    const reader = venuesRes.body.getReader();
-    const decoder = new TextDecoder();
-    let sseBuffer = ''; // puffert unvollständige SSE-Zeilen zwischen Chunks
-    let buffer = '';      // aktuell eingehender Text-Stream
-    let rendered = 0;     // bereits gerenderte Karten
-    let depth = 0;        // Klammerntiefe für JSON-Objekt-Erkennung
-    let objStart = -1;    // Position des aktuell geöffneten {
-
-    const tryExtractVenue = () => {
-      // Suche vollständige { ... } Objekte — ignoriere [ ] des Arrays
-      for (let i = 0; i < buffer.length; i++) {
-        const ch = buffer[i];
-        if (ch === '{') {
-          if (depth === 0) objStart = i;
-          depth++;
-        } else if (ch === '}' && depth > 0) {
-          depth--;
-          if (depth === 0 && objStart >= 0) {
-            const raw = buffer.slice(objStart, i + 1);
-            buffer = buffer.slice(i + 1); // sofort wegschneiden
-            objStart = -1;
-            try {
-              const venue = JSON.parse(raw);
-              if (venue.name && venue.category) {
-                activities.push(venue);
-                const cardHtml = buildActivityCard(venue, rendered, date, location, type, actType, maxKm);
-                if (!skeletonsCleared) {
-                  grid.innerHTML = '';
-                  skeletonsCleared = true;
-                }
-                grid.insertAdjacentHTML('beforeend', cardHtml);
-                rendered++;
-                setProgress(Math.min(30 + rendered * 7, 90));
-                document.getElementById('results-title').textContent =
-                  `${rendered} ${isRest?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
-              }
-            } catch(e) { /* kein valides Venue-Objekt, weiter */ }
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (searchAborted) { reader.cancel(); return; }
-
-      // SSE-Chunks parsen — sseBuffer fängt abgeschnittene Zeilen auf
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = (sseBuffer + chunk).split('\n');
-      sseBuffer = lines.pop(); // letzte unvollständige Zeile aufheben
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        const data = line.slice(6).trim();
-        if (!data || data === '[DONE]') continue;
-        try {
-          const evt = JSON.parse(data);
-          if (evt.type === 'content_block_delta' && evt.delta?.text) {
-            buffer += evt.delta.text;
-            // Extrahiere so viele vollständige Objekte wie möglich
-            while (tryExtractVenue()) {}
-          }
-        } catch(e) { /* ungültiges SSE-Event, ignorieren */ }
-      }
-    }
-
-    // Letzten Buffer-Rest versuchen zu parsen (falls letztes Objekt noch drin)
-    while (tryExtractVenue()) {}
-    console.log('🏁 Stream Ende — rendered:', rendered, 'buffer length:', buffer.length, 'preview:', buffer.slice(0,100));
-    // Fallback: robustParse auf gesamten Buffer wenn nichts gerendert wurde
-    if (rendered === 0 && buffer.trim().length > 0) {
-      console.log('⚠️ Streaming-Parser: kein Venue extrahiert, versuche robustParse');
-      const fallbackVenues = robustParse(buffer);
-      if (fallbackVenues.length) {
-        activities = fallbackVenues;
-        grid.innerHTML = '';
-        renderGrid(activities, date, location, type, actType, maxKm);
-        appendLoadMoreBtn(date);
-        setProgress(100); setTimeout(()=>setProgress(0),600);
-        return;
-      }
-    }
-
-    // Restliche Skeletons entfernen falls weniger als 9 Karten kamen
-    grid.querySelectorAll('.skeleton-card').forEach(s => s.remove());
+    const rendered = await streamAndRenderVenues(venuesRes, p, statusInterval);
 
     if (!activities.length) {
-      grid.innerHTML = `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
+      document.getElementById('activity-grid').innerHTML =
+        `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
       document.getElementById('results-header').style.display='none';
       setProgress(100); setTimeout(()=>setProgress(0),600);
       return;
     }
 
-    appendLoadMoreBtn(date);
+    appendLoadMoreBtn(p.date);
     setProgress(100);
     setTimeout(()=>setProgress(0), 600);
 
   } catch(e) {
     console.error('findActivities error:', e.message, e.stack);
-    const msg = e.message||'Unbekannter Fehler';
+    const msg = e.message || 'Unbekannter Fehler';
     showError(msg);
-    document.getElementById('activity-grid').innerHTML = `<div class="state-error"><div class="big-icon">⚠️</div><p>${msg}</p></div>`;
+    document.getElementById('activity-grid').innerHTML =
+      `<div class="state-error"><div class="big-icon">⚠️</div><p>${msg}</p></div>`;
     if (e.message?.includes('401')) { localStorage.removeItem(KEY_STORE); document.getElementById('api-banner').style.display='flex'; }
     clearInterval(statusInterval);
     setProgress(0);
   } finally {
     document.getElementById('cancel-btn').style.display = 'none';
-    document.getElementById('search-btn').disabled=false;
-    document.getElementById('search-btn').textContent='Aktivitäten finden';
+    btn.disabled = false;
+    btn.textContent = p.isRest ? 'Restaurants finden' : 'Aktivitäten finden';
   }
 }
 
