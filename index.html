@@ -17,21 +17,25 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"></noscript>
 <style>
   :root {
-    --ink:#1c1b18;--ink-2:#46443c;--ink-3:#8c8880;
-    --paper:#f8f6f1;--paper-2:#efece4;--paper-3:#e4e0d5;
+    --ink:#1a1812;--ink-2:#3d3b32;--ink-3:#857f72;
+    --paper:#f5f2ea;--paper-2:#ede9de;--paper-3:#ddd8ca;
     --white:#ffffff;
-    --accent:#c45c2a;--accent-hover:#a84a20;--accent-light:#faece7;--accent-mid:#e07048;
-    --moss:#3b6d11;--moss-light:#eaf3de;
-    --rose:#993556;--rose-light:#fbeaf0;
-    --sky:#185fa5;--sky-light:#e6f1fb;
+    /* Primär: Bernstein-Orange */
+    --accent:#bf5320;--accent-hover:#a34418;--accent-light:#faeae0;--accent-mid:#d96535;
+    /* Sekundär: Waldgrün (Restaurant-Mode) */
+    --forest:#2c5f2e;--forest-mid:#3d7a40;--forest-light:#e8f2e8;
+    /* Kompatibilitäts-Aliases */
+    --moss:#2c5f2e;--moss-light:#e8f2e8;
+    --rose:#7a2340;--rose-light:#f5e6ec;
+    --sky:#1a5496;--sky-light:#e3eef8;
     --radius:14px;--radius-sm:9px;--radius-xs:6px;
-    /* tile accent colors */
-    --tile-dist-bg:#fff7ed;--tile-dist-accent:#c45c2a;
-    --tile-price-bg:#f0fdf4;--tile-price-accent:#16a34a;
-    --tile-hours-bg:#f5f3ff;--tile-hours-accent:#7c3aed;
-    --tile-weather-bg:#eff6ff;--tile-weather-accent:#2563eb;
-    --tile-tips-bg:#fffbeb;--tile-tips-accent:#d97706;
-    --tile-duration-bg:#f0f9ff;--tile-duration-accent:#0284c7;
+    /* tile accent colors — 2 Familien statt 6 */
+    --tile-dist-bg:#faeae0;--tile-dist-accent:#bf5320;
+    --tile-price-bg:#e8f2e8;--tile-price-accent:#2c5f2e;
+    --tile-hours-bg:#fef3e0;--tile-hours-accent:#c47a1a;
+    --tile-weather-bg:#e3eef8;--tile-weather-accent:#1a5496;
+    --tile-tips-bg:#f0ece4;--tile-tips-accent:#5a5040;
+    --tile-duration-bg:#e8f2e8;--tile-duration-accent:#3d7a40;
   }
 
   /* ── VISITED OVERLAY ── */
@@ -135,7 +139,7 @@
   .card-thumb{height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden;}
   .card-thumb-bg{position:absolute;inset:0;opacity:.18;}
   .thumb-adventure{background:linear-gradient(135deg,#ff6b35,#f7931e);}
-  .thumb-animals{background:linear-gradient(135deg,#a855f7,#7c3aed);}
+  .thumb-animals{background:linear-gradient(135deg,#a855f7,#2c5f2e);}
   .thumb-water{background:linear-gradient(135deg,#06b6d4,#0284c7);}
   .thumb-museum{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
   .thumb-culture{background:linear-gradient(135deg,#6366f1,#4338ca);}
@@ -171,7 +175,7 @@
   .card-name{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:3px;line-height:1.3;}
   .card-location{font-size:12px;color:var(--ink-3);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
   .env-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-  .env-dot-indoor{background:#7c3aed;}
+  .env-dot-indoor{background:#2c5f2e;}
   .env-dot-outdoor{background:#16a34a;}
   .card-desc{font-size:13px;color:var(--ink-2);line-height:1.6;margin-bottom:14px;}
   .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
@@ -378,7 +382,7 @@
   .mode-toggle{display:flex;gap:6px;margin-bottom:14px;}
   .mode-btn{flex:1;height:44px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;text-align:center;}
   .mode-btn.active.act-mode{background:var(--accent);border-color:var(--accent);color:#fff;}
-  .mode-btn.active.rest-mode{background:#7c3aed;border-color:#7c3aed;color:#fff;}
+  .mode-btn.active.rest-mode{background:#2c5f2e;border-color:#2c5f2e;color:#fff;}
 
   /* ── FIELDS ROW — 2 cols on mobile, 3 on wider ── */
   .fields-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
@@ -395,7 +399,7 @@
   /* ── RESTAURANT CARD ── */
   .rest-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--paper-3);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;}
   .rest-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08);}
-  .rest-card.active{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12);}
+  .rest-card.active{border-color:#2c5f2e;box-shadow:0 0 0 3px rgba(44,95,46,.12);}
   .rest-thumb{height:68px;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
   .rest-thumb-bg{position:absolute;inset:0;opacity:.18;}
   .rest-price-badge{position:absolute;top:7px;right:7px;font-size:10px;font-weight:600;background:rgba(0,0,0,.5);color:#fff;border-radius:4px;padding:2px 6px;}
@@ -428,8 +432,8 @@
   .cpill-other{background:var(--paper-2);color:var(--ink-2);}
 
   /* ── RESTAURANT MODE BUTTON COLOR ── */
-  #search-btn.rest-mode{background:#7c3aed;}
-  #search-btn.rest-mode:hover{background:#6d28d9;}
+  #search-btn.rest-mode{background:#2c5f2e;}
+  #search-btn.rest-mode:hover{background:#245026;}
 </style>
 </head>
 <body>
@@ -2885,6 +2889,198 @@ const LOCAL_VENUES = [
     "closedOn": null,
     "childFriendly": true,
     "priceRange": "€"
+  },
+  {
+    "name": "Marena Wellness & Spa (Hallenbad)",
+    "location": "Miedzywodzie, Polen",
+    "region": "miedzywodzie",
+    "category": "water",
+    "environment": "indoor",
+    "emoji": "🏊",
+    "distanceKm": 0,
+    "driveMinutes": 2,
+    "suitableFor": "both",
+    "entranceFee": "kostenpflichtig",
+    "openingHours": "tägl. geöffnet (Hotelgäste & Tagesgäste)",
+    "durationHours": 3,
+    "googleRating": 4.2,
+    "reviewCount": 320,
+    "description": "Wellnesshotel mit großem Hallenbad (15×6 m), finnischer Sauna, Aromagrotte, Dampfbad, Whirlpool und Ruhebereich — ideal für Schlechtwettertage. Kinderspielzimmer und Spielplatz vorhanden, sehr familienfreundlich.",
+    "tips": [
+      "Auch als Tagesgast nutzbar — am besten vorher telefonisch anfragen",
+      "Kinderspielzimmer entlastet Eltern während des Wellnessbesuchs",
+      "Im Kiefernwald, nur 350 m vom Strand"
+    ],
+    "lat": 53.991,
+    "lon": 14.444
+  },
+  {
+    "name": "Gigapark Miedzywodzie (Dmuchańce)",
+    "location": "Miedzywodzie, Polen",
+    "region": "miedzywodzie",
+    "category": "adventure",
+    "environment": "outdoor",
+    "emoji": "🎪",
+    "distanceKm": 0,
+    "driveMinutes": 2,
+    "suitableFor": "kids",
+    "entranceFee": "~20–30 PLN",
+    "openingHours": "Sommer: tägl. 10–20 Uhr (wetterabhängig)",
+    "durationHours": 2,
+    "googleRating": 4.3,
+    "reviewCount": 180,
+    "description": "Riesiger aufblasbarer Spielpark direkt am Strand — Hüpfburgen, Trampolins, Rutschen und Hinderniskurse für Kinder jeden Alters. Eltern können kostenlos zuschauen, Snacks können mitgebracht werden.",
+    "tips": [
+      "Eltern haben freien Eintritt",
+      "Eigenes Essen und Trinken darf mitgebracht werden",
+      "Nur in der Sommersaison geöffnet, bei schlechtem Wetter geschlossen"
+    ],
+    "lat": 53.992,
+    "lon": 14.443
+  },
+  {
+    "name": "Naturkundemuseum des Wolin-Nationalparks",
+    "location": "Miedzyzdroje, Polen",
+    "region": "miedzywodzie",
+    "category": "museum",
+    "environment": "indoor",
+    "emoji": "🦅",
+    "distanceKm": 25,
+    "driveMinutes": 25,
+    "suitableFor": "both",
+    "entranceFee": "9 PLN / 4,50 PLN erm.",
+    "openingHours": "Mai–Sep: Di–So 10–18 Uhr; Okt–Apr: Di–Sa 8–16 Uhr",
+    "durationHours": 1.5,
+    "googleRating": 4.4,
+    "reviewCount": 410,
+    "description": "Naturhistorisches Museum des Woliner Nationalparks im Herzen von Miedzyzdroje — Dioramen der Küstenlandschaft, Seeadler-Freifluganlage, Wisent-Ausstellung, Bernstein und Geologie der Insel. Audioguides auch auf Deutsch verfügbar.",
+    "tips": [
+      "Montags geschlossen",
+      "Ideal als Schlechtwetteralternative oder vor einer Wanderung im Nationalpark",
+      "Audioguide auf Deutsch verfügbar"
+    ],
+    "lat": 53.932,
+    "lon": 14.448
+  },
+  {
+    "name": "Oceanarium Miedzyzdroje",
+    "location": "Miedzyzdroje, Polen",
+    "region": "miedzywodzie",
+    "category": "animals",
+    "environment": "indoor",
+    "emoji": "🦈",
+    "distanceKm": 25,
+    "driveMinutes": 25,
+    "suitableFor": "both",
+    "entranceFee": "80 PLN / 60 PLN erm. / Kinder unter 2 kostenlos",
+    "openingHours": "März–Okt: tägl. 10–19 Uhr",
+    "durationHours": 2,
+    "googleRating": 4.5,
+    "reviewCount": 890,
+    "description": "Beeindruckendes Aquarium auf 3.000 m² — Haie, Muränen, Korallenriff-Fische und ein 16 m langer Unterwasser-Halbtunnel. Touch-Pool zum Berühren lebender Fische, interaktiver Kinderbereich mit Multimedia-Spielen und Haifisch-Ausstellung in 1:1-Größe.",
+    "tips": [
+      "16-m-Tunnel ist das Highlight — unbedingt Zeit einplanen",
+      "Touch-Pool begeistert Kinder besonders",
+      "Café im Haus mit hausgemachten Kuchen und Pizza"
+    ],
+    "lat": 53.933,
+    "lon": 14.449
+  },
+  {
+    "name": "Bałtycki Park Miniatur (Ostsee-Miniaturenpark)",
+    "location": "Miedzyzdroje, Polen",
+    "region": "miedzywodzie",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "🗼",
+    "distanceKm": 25,
+    "driveMinutes": 25,
+    "suitableFor": "both",
+    "entranceFee": "kostenpflichtig (Familienticket verfügbar)",
+    "openingHours": "ganzjährig; Sommer: 9–19 Uhr",
+    "durationHours": 1,
+    "googleRating": 4.3,
+    "reviewCount": 540,
+    "description": "Miniaturenpark im Maßstab 1:25 mit den schönsten Bauwerken und Leuchttürmen aller Ostsee-Anrainerstaaten — Polen, Deutschland, Dänemark, Schweden, Finnland und mehr. Modell-Eisenbahn auf 500 m² als Extra-Highlight für Kinder.",
+    "tips": [
+      "Rundgang dauert ca. 45 Minuten",
+      "Modell-Eisenbahn ist besonders bei Kindern beliebt",
+      "Ganzjährig geöffnet, auch bei leichtem Regen schön"
+    ],
+    "lat": 53.934,
+    "lon": 14.450
+  },
+  {
+    "name": "Fun Park Miedzyzdroje",
+    "location": "Miedzyzdroje, Polen",
+    "region": "miedzywodzie",
+    "category": "adventure",
+    "environment": "indoor",
+    "emoji": "🎢",
+    "distanceKm": 25,
+    "driveMinutes": 25,
+    "suitableFor": "kids",
+    "entranceFee": "kostenpflichtig",
+    "openingHours": "tägl. geöffnet (Sommer: 10–20 Uhr)",
+    "durationHours": 2,
+    "googleRating": 4.2,
+    "reviewCount": 230,
+    "description": "Großer Indoor-Spielpark für Kinder in Miedzyzdroje — Klettergerüste, Trampolins, Rutschen und verschiedene Spielbereiche unter einem Dach. Perfekte Schlechtwetteroption für Familien mit jüngeren Kindern.",
+    "tips": [
+      "Ideal bei Regen oder als Nachmittagsprogramm",
+      "Für Kinder bis ca. 12 Jahre geeignet",
+      "Café vor Ort vorhanden"
+    ],
+    "lat": 53.935,
+    "lon": 14.451
+  },
+  {
+    "name": "Museum der Geschichte des Kamień-Gebiets",
+    "location": "Kamień Pomorski, Polen",
+    "region": "miedzywodzie",
+    "category": "museum",
+    "environment": "indoor",
+    "emoji": "🏛️",
+    "distanceKm": 20,
+    "driveMinutes": 20,
+    "suitableFor": "both",
+    "entranceFee": "günstig (~10 PLN)",
+    "openingHours": "Di–So 10–16 Uhr (ganzjährig)",
+    "durationHours": 1.5,
+    "googleRating": 4.3,
+    "reviewCount": 190,
+    "description": "Stadtmuseum im gotischen Rathaus von Kamień Pomorski — archäologische Funde von der Bronzezeit bis zum Mittelalter, darunter ein Wikingermesser aus dem 10. Jahrhundert. Kombinierbar mit einem Spaziergang durch die hübsche Altstadt und dem Dom.",
+    "tips": [
+      "Kombination mit Dom und Altstadt empfehlenswert",
+      "Montags geschlossen",
+      "Kamień Pomorski ist ein schöner Halbtagesausflug"
+    ],
+    "lat": 53.967,
+    "lon": 14.771
+  },
+  {
+    "name": "Zentrum der Slawen und Wikinger (Wolin)",
+    "location": "Wolin, Polen",
+    "region": "miedzywodzie",
+    "category": "culture",
+    "environment": "outdoor",
+    "emoji": "⚔️",
+    "distanceKm": 30,
+    "driveMinutes": 30,
+    "suitableFor": "both",
+    "entranceFee": "~20 PLN / Kinder günstiger",
+    "openingHours": "Apr–Okt: tägl. 10–18 Uhr",
+    "durationHours": 3,
+    "googleRating": 4.5,
+    "reviewCount": 760,
+    "description": "Faszinierendes Freilichtmuseum auf der Plageinsel bei Wolin — rekonstruierte Slawen- und Wikingersiedlung aus dem 9.–11. Jahrhundert mit über 27 nachgebauten Häusern. Workshops für Bogenschießen, Töpfern, Filzen und Schmieden; lebendige Vorführungen durch Darsteller in historischer Kleidung. Jedes Jahr Ende Juli/Anfang August großes Wikingerfestival.",
+    "tips": [
+      "Wikingerfestival Ende Juli/Anfang August ist ein einmaliges Erlebnis",
+      "Bogenschießen und Workshops machen Kindern riesigen Spaß",
+      "Parkplatz kostenlos; nur in der Saison geöffnet"
+    ],
+    "lat": 53.840,
+    "lon": 14.620
   }
 ]
 ;
@@ -3827,6 +4023,46 @@ function ratingBench(rating) {
 }
 
 // ── Render grid ───────────────────────────────────────────────────
+// Baut eine einzelne Aktivitäts-Karte als HTML-String — wird beim Streaming genutzt
+function buildActivityCard(a, i, date, location, type, actType, maxKm) {
+  const hrs=Math.floor((a.driveMinutes||0)/60), mins=(a.driveMinutes||0)%60;
+  const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
+  const fc=forClass(a.suitableFor||'both');
+  const fl=forLabel(a.suitableFor||'both');
+  const favActive=isFav(a.name);
+  const visitedActive=isVisited(a.name);
+  const durStr=durationStr(a.durationHours);
+  const isTop = i === 0 && (a.googleRating||0) >= 4.3;
+  return `<div class="act-card${isTop?' top-pick':''}${visitedActive?' visited':''}" id="card-${i}" onclick="showDetail(${i},'${date}')">
+    ${isTop?'<div class="top-pick-badge">⭐ Top Empfehlung</div>':''}
+    <div class="card-thumb">
+      <div class="card-thumb-bg thumb-${a.category||'other'}"></div>
+      <span class="card-thumb-emoji">${a.emoji||'📍'}</span>
+      <span class="cat-pill cat-${a.category||'other'}">${catLabel(a.category||'other')}</span>
+      <span class="for-pill ${fc}">${fl}</span>
+      ${visitedActive?'<div class="visited-badge">✓ Besucht</div>':''}
+      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}"
+        onclick="toggleFav(${i});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
+    </div>
+    <div class="card-body">
+      <div class="card-name">${a.name}</div>
+      <div class="card-location">
+        <span class="env-dot env-dot-${a.environment||'outdoor'}"></span>
+        ${a.location||''}${a.environment?' · '+(a.environment==='indoor'?'Drinnen':'Draußen'):''}
+      </div>
+      <div class="card-desc">${a.description||''}</div>
+      <div class="card-footer">
+        <div class="card-stats">
+          <span class="stat">${svgIcon('road')} ${a.distanceKm||'?'} km · ${driveStr}</span>
+          ${a.entranceFee?`<span class="stat">${svgIcon('ticket')} ${a.entranceFee}</span>`:''}
+          ${durStr?`<span class="stat">${svgIcon('clock')} ${durStr}</span>`:''}
+        </div>
+        ${a.googleRating?`<div style="display:flex;align-items:center;gap:6px">${starsHtml(a.googleRating,a.reviewCount)}${ratingBench(a.googleRating)}</div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderGrid(acts, date, location, type, actType, maxKm) {
   const grid = document.getElementById('activity-grid');
   const header = document.getElementById('results-header');
@@ -4082,11 +4318,30 @@ async function findActivities() {
     saveLastSearch(location, date, type, actType, envType, maxKm);
     lastSearchParams = { location, date, type, actType, envType, maxKm };
     loadMorePage = 1;
-    const grid = document.getElementById('activity-grid');
 
     // ── Claude API fallback (non-Pfaffenhofen or local DB empty) ──
+    // 1. Skeletons sofort anzeigen (nicht überschreiben!)
     showSkeletons(9);
-    grid.innerHTML = `<div class="state-empty"><div class="spinner"></div><p>🔍 Aktivitäten werden gesucht…</p></div>`;
+    document.getElementById('results-header').style.display = 'flex';
+    document.getElementById('results-title').textContent = isRest ? 'Restaurants werden gesucht…' : 'Aktivitäten werden gesucht…';
+    document.getElementById('results-meta').textContent = '📍 Standort wird analysiert…';
+
+    // 2. Progress-Bar langsam animieren während gewartet wird
+    setProgress(15);
+    const statusMessages = [
+      { pct: 25, msg: '🔍 Suche läuft…' },
+      { pct: 40, msg: '🗺️ Umgebung wird erkundet…' },
+      { pct: 55, msg: '✨ Empfehlungen werden zusammengestellt…' },
+      { pct: 70, msg: '📋 Fast fertig…' },
+    ];
+    let statusIdx = 0;
+    const statusInterval = setInterval(() => {
+      if (statusIdx < statusMessages.length) {
+        const { pct, msg } = statusMessages[statusIdx++];
+        setProgress(pct);
+        document.getElementById('results-meta').textContent = msg;
+      }
+    }, 3500);
 
     const whoDesc  = type==='couple'?'Paare ohne Kinder':type==='kids'?'Familien mit Kindern':'Paare und Familien';
     const actDesc  = actType==='any'?'gemischte Auswahl (Abenteuer, Natur, Kultur, Tiere, Wasser, Museen, Freizeitparks)':actType;
@@ -4107,7 +4362,7 @@ durationHours = realistisch empfohlene Aufenthaltsdauer in Stunden (z.B. Zoo=4, 
     const venuesRes = await fetch("https://api.anthropic.com/v1/messages", {
       method:"POST",
       headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4096,messages:[{role:"user",content:venuesPrompt}]})
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4096,stream:true,messages:[{role:"user",content:venuesPrompt}]})
     });
     if (!venuesRes.ok) {
       const err = await venuesRes.json().catch(()=>({}));
@@ -4116,29 +4371,123 @@ durationHours = realistisch empfohlene Aufenthaltsdauer in Stunden (z.B. Zoo=4, 
       throw new Error(msg);
     }
     if (searchAborted) return;
-    setProgress(60);
+    clearInterval(statusInterval);
+    setProgress(30);
 
-    const venuesData = await venuesRes.json();
-    const rawVenues = robustParse(venuesData.content.map(b=>b.text||'').join(''));
-    if (!rawVenues.length) {
-      document.getElementById('activity-grid').innerHTML = `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
+    // ── Streaming oder Fallback je nach Verfügbarkeit ──
+    const grid = document.getElementById('activity-grid');
+    document.getElementById('results-header').style.display = 'flex';
+    document.getElementById('results-title').textContent = isRest ? 'Restaurants werden geladen…' : 'Aktivitäten werden geladen…';
+    document.getElementById('results-meta').textContent = '';
+
+    // Fallback für file:// oder Browser ohne Streaming-Support
+    if (!venuesRes.body || !venuesRes.body.getReader) {
+      console.log('⚠️ Streaming nicht verfügbar — Fallback auf JSON');
+      const venuesData = await venuesRes.json();
+      const rawVenues = robustParse(venuesData.content.map(b=>b.text||'').join(''));
+      if (!rawVenues.length) {
+        grid.innerHTML = `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
+        document.getElementById('results-header').style.display='none';
+        setProgress(100); setTimeout(()=>setProgress(0),600);
+        return;
+      }
+      activities = rawVenues;
+      renderGrid(activities, date, location, type, actType, maxKm);
+      appendLoadMoreBtn(date);
+      setProgress(100); setTimeout(()=>setProgress(0),600);
+      return;
+    }
+
+    let skeletonsCleared = false;
+    const reader = venuesRes.body.getReader();
+    const decoder = new TextDecoder();
+    let sseBuffer = ''; // puffert unvollständige SSE-Zeilen zwischen Chunks
+    let buffer = '';      // aktuell eingehender Text-Stream
+    let rendered = 0;     // bereits gerenderte Karten
+    let depth = 0;        // Klammerntiefe für JSON-Objekt-Erkennung
+    let objStart = -1;    // Position des aktuell geöffneten {
+
+    const tryExtractVenue = () => {
+      // Suche vollständige { ... } Objekte — ignoriere [ ] des Arrays
+      for (let i = 0; i < buffer.length; i++) {
+        const ch = buffer[i];
+        if (ch === '{') {
+          if (depth === 0) objStart = i;
+          depth++;
+        } else if (ch === '}' && depth > 0) {
+          depth--;
+          if (depth === 0 && objStart >= 0) {
+            const raw = buffer.slice(objStart, i + 1);
+            buffer = buffer.slice(i + 1); // sofort wegschneiden
+            objStart = -1;
+            try {
+              const venue = JSON.parse(raw);
+              if (venue.name && venue.category) {
+                activities.push(venue);
+                const cardHtml = buildActivityCard(venue, rendered, date, location, type, actType, maxKm);
+                if (!skeletonsCleared) {
+                  grid.innerHTML = '';
+                  skeletonsCleared = true;
+                }
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+                rendered++;
+                setProgress(Math.min(30 + rendered * 7, 90));
+                document.getElementById('results-title').textContent =
+                  `${rendered} ${isRest?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
+              }
+            } catch(e) { /* kein valides Venue-Objekt, weiter */ }
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (searchAborted) { reader.cancel(); return; }
+
+      // SSE-Chunks parsen — sseBuffer fängt abgeschnittene Zeilen auf
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = (sseBuffer + chunk).split('\n');
+      sseBuffer = lines.pop(); // letzte unvollständige Zeile aufheben
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (!data || data === '[DONE]') continue;
+        try {
+          const evt = JSON.parse(data);
+          if (evt.type === 'content_block_delta' && evt.delta?.text) {
+            buffer += evt.delta.text;
+            // Extrahiere so viele vollständige Objekte wie möglich
+            while (tryExtractVenue()) {}
+          }
+        } catch(e) { /* ungültiges SSE-Event, ignorieren */ }
+      }
+    }
+
+    // Restliche Skeletons entfernen falls weniger als 9 Karten kamen
+    grid.querySelectorAll('.skeleton-card').forEach(s => s.remove());
+
+    if (!activities.length) {
+      grid.innerHTML = `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
       document.getElementById('results-header').style.display='none';
       setProgress(100); setTimeout(()=>setProgress(0),600);
       return;
     }
-    if (searchAborted) return;
-    activities = rawVenues;
-    renderGrid(activities, date, location, type, actType, maxKm);
+
     appendLoadMoreBtn(date);
     setProgress(100);
     setTimeout(()=>setProgress(0), 600);
 
   } catch(e) {
-    console.error(e);
+    console.error('findActivities error:', e.message, e.stack);
     const msg = e.message||'Unbekannter Fehler';
     showError(msg);
     document.getElementById('activity-grid').innerHTML = `<div class="state-error"><div class="big-icon">⚠️</div><p>${msg}</p></div>`;
     if (e.message?.includes('401')) { localStorage.removeItem(KEY_STORE); document.getElementById('api-banner').style.display='flex'; }
+    clearInterval(statusInterval);
     setProgress(0);
   } finally {
     document.getElementById('cancel-btn').style.display = 'none';
