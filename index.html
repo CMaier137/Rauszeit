@@ -4469,6 +4469,7 @@ durationHours = realistisch empfohlene Aufenthaltsdauer in Stunden (z.B. Zoo=4, 
 
     // Letzten Buffer-Rest versuchen zu parsen (falls letztes Objekt noch drin)
     while (tryExtractVenue()) {}
+    console.log('🏁 Stream Ende — rendered:', rendered, 'buffer length:', buffer.length, 'preview:', buffer.slice(0,100));
     // Fallback: robustParse auf gesamten Buffer wenn nichts gerendert wurde
     if (rendered === 0 && buffer.trim().length > 0) {
       console.log('⚠️ Streaming-Parser: kein Venue extrahiert, versuche robustParse');
