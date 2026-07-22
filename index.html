@@ -512,8 +512,8 @@
           </select>
         </div>
         <div class="field" style="margin-top:6px;">
-          <label for="max-km">Entfernung: <span id="km-label">100 km</span></label>
-          <input type="range" id="max-km" min="10" max="200" step="10" value="100"
+          <label for="max-km">Entfernung: <span id="km-label">30 km</span></label>
+          <input type="range" id="max-km" min="10" max="200" step="10" value="30"
             oninput="document.getElementById('km-label').textContent=this.value+' km'"/>
         </div>
         <div class="toggle-pills" id="act-toggles" style="margin-top:2px;">
@@ -3484,7 +3484,7 @@ const LOCAL_RADIUS_KM = 15; // If user's location is within 15km of Pfaffenhofen
 
 // ── Key management ──────────────────────────────────────────────
 const KEY_STORE = 'wf_app_password_v1';
-const WORKER_URL = 'https://rauszeit.christian-maier-88.workers.dev/api/venues';
+const WORKER_URL = 'https://rauszeit-worker.christian-maier-88.workers.dev/api/venues';
 const FAV_STORE = 'wf_favorites_v1';
 const VISITED_STORE = 'wf_visited_v1';
 const LAST_SEARCH_STORE = 'wf_last_search_v1';
@@ -4683,6 +4683,7 @@ function queryAndRenderLocalDB(p, btn) {
   if (!totalLocal) return false;
 
   activities = [...localInitial, ...localRemainder];
+  setTimeout(() => document.getElementById('activity-grid').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   if (isRest) {
     renderRestaurantGrid(localInitial, date, location, maxKmNum);
     if (localRemainder.length > 0) appendLocalLoadMoreBtn(date, 9, localRemainder.length);
@@ -4843,6 +4844,7 @@ async function findActivities() {
 
     showSkeletons(9);
     document.getElementById('results-header').style.display = 'flex';
+    document.getElementById('activity-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
     document.getElementById('results-title').textContent = p.isRest ? 'Restaurants werden gesucht…' : 'Aktivitäten werden gesucht…';
     document.getElementById('results-meta').textContent = '📍 Standort wird analysiert…';
     setProgress(15);
