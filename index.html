@@ -4784,7 +4784,7 @@ Antworte NUR mit einem JSON-Objekt, kein Markdown, keine Erklärung:
     const res = await fetch(WORKER_URL, {
       method:"POST",
       headers:{"Content-Type":"application/json","X-App-Password":apiKey},
-      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1200,messages:[{role:"user",content:prompt}]})
+      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1200,messages:[{role:"user",content:prompt}]})
     });
     if (!res.ok) throw new Error(`API Fehler ${res.status}`);
     const data = await res.json();
@@ -5019,7 +5019,7 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
     const res = await fetch(WORKER_URL, {
       method:"POST",
       headers:{"Content-Type":"application/json","X-App-Password":apiKey},
-      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4096,messages:[{role:"user",content:prompt}]})
+      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:4096,messages:[{role:"user",content:prompt}]})
     });
     if (!res.ok) throw new Error(`API Fehler ${res.status}`);
     const data = await res.json();
@@ -5989,7 +5989,7 @@ async function findActivities() {
     const venuesRes = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type":"application/json", "X-App-Password": apiKey },
-      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:4096, stream:true, messages:[{ role:"user", content:buildVenuesPrompt(p) }] })
+      body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:4096, stream:true, messages:[{ role:"user", content:buildVenuesPrompt(p) }] })
     });
 
     if (!venuesRes.ok) {
