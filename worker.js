@@ -1,7 +1,12 @@
-// rauszeit. — Cloudflare Worker API Proxy
-// Secrets in Cloudflare hinterlegen:
+// rauszeit. — Cloudflare Worker API Proxy mit AI Gateway
+// Secrets in Cloudflare hinterlegen (Settings → Variables and secrets):
 //   ANTHROPIC_API_KEY  — dein Anthropic API Key (sk-ant-...)
 //   APP_PASSWORD       — das Passwort das Nutzer eingeben
+//
+// Ersetze {ACCOUNT_ID} mit deiner Cloudflare Account ID
+// (zu finden im Cloudflare Dashboard rechts unter "Account ID")
+
+const GATEWAY_URL = 'https://gateway.ai.cloudflare.com/v1/6490c481f8d33a346385a52b7acd2914/rauszeit/anthropic/v1/messages';
 
 export default {
   async fetch(request, env) {
@@ -10,7 +15,7 @@ export default {
     const allowedOrigins = [
       'https://rauszeit.pages.dev',
       'http://localhost',
-      'null', // file:// lokales Testen
+      'null',
     ];
     const origin = request.headers.get('Origin') || '';
     const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
@@ -42,7 +47,7 @@ export default {
       });
     }
 
-    // ── Request an Anthropic weiterleiten ─────────────────────────
+    // ── Request Body lesen ────────────────────────────────────────
     let body;
     try {
       body = await request.json();
@@ -50,7 +55,8 @@ export default {
       return new Response('Invalid JSON', { status: 400, headers: corsHeaders });
     }
 
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+    // ── Anfrage über AI Gateway an Anthropic weiterleiten ─────────
+    const anthropicRes = await fetch(GATEWAY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
