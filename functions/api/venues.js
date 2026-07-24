@@ -1,5 +1,13 @@
 export async function onRequestPost(context) {
-  return context.env.RAUSZEIT_WORKER.fetch(context.request);
+  // Alle Headers explizit weiterleiten inkl. X-App-Password
+  const originalRequest = context.request;
+  const headers = new Headers(originalRequest.headers);
+  
+  const newRequest = new Request(originalRequest, {
+    headers: headers,
+  });
+  
+  return context.env.RAUSZEIT_WORKER.fetch(newRequest);
 }
 
 export async function onRequestOptions(context) {
