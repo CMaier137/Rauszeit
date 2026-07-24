@@ -5870,8 +5870,9 @@ async function streamAndRenderVenues(venuesRes, p, statusInterval) {
       `${rendered} ${isRest?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
   };
 
-  // Cache-Hit: direkt JSON parsen (kein Streaming nötig)
-  if (venuesRes.headers.get('X-Cache') === 'HIT') {
+  // Worker gibt immer JSON zurück (HIT oder MISS)
+  const contentType = venuesRes.headers.get('Content-Type') || '';
+  if (contentType.includes('application/json')) {
     const venuesData = await venuesRes.json();
     robustParse(venuesData.content.map(b=>b.text||'').join('')).forEach(renderOneVenue);
     grid.querySelectorAll('.skeleton-card').forEach(s => s.remove());
