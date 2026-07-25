@@ -504,6 +504,21 @@ test('UI-04', 'suitableFor Tags sind noch in den Karten sichtbar', () => {
   assert(html.includes('forLabel'), 'forLabel Funktion fehlt!');
 });
 
+
+test('UI-05', 'Radius-Slider wurde entfernt', () => {
+  assert(!html.includes('id="max-km"'), 'Aktivitäten km-Slider noch vorhanden!');
+  assert(!html.includes('id="max-km-rest"'), 'Restaurant km-Slider noch vorhanden!');
+});
+
+test('UI-06', 'Fixer Radius 50km für Aktivitäten', () => {
+  assert(html.includes('maxKm:         isRest ? 30 : 50'), 'Fixer Radius nicht gesetzt!');
+});
+
+test('UI-07', 'Load-More Button unterstützt Radius-Erweiterung', () => {
+  assert(html.includes('expandToRadius'), 'expandToRadius Parameter fehlt!');
+  assert(html.includes('Umkreis auf'), 'Umkreis-Erweiterungs-Text fehlt!');
+});
+
 // ═══════════════════════════════════════════════════════════════════
 // ZUSAMMENFASSUNG
 // ═══════════════════════════════════════════════════════════════════

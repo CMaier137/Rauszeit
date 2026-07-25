@@ -506,11 +506,7 @@
             <option value="nature">Natur & Wandern</option>
           </select>
         </div>
-        <div class="field" style="margin-top:6px;">
-          <label for="max-km">Entfernung: <span id="km-label">30 km</span></label>
-          <input type="range" id="max-km" min="10" max="200" step="10" value="30"
-            oninput="document.getElementById('km-label').textContent=this.value+' km'"/>
-        </div>
+
         <div class="toggle-pills" id="act-toggles" style="margin-top:2px;">
           <button class="toggle-pill" id="pill-outdoor" onclick="togglePill('pill-outdoor')">☀️ Outdoor</button>
           <button class="toggle-pill" id="pill-indoor" onclick="togglePill('pill-indoor')">🏠 Indoor</button>
@@ -542,11 +538,7 @@
             </select>
           </div>
         </div>
-        <div class="field">
-          <label for="max-km-rest">Entfernung: <span id="km-label-rest">30 km</span></label>
-          <input type="range" id="max-km-rest" min="5" max="100" step="5" value="30"
-            oninput="document.getElementById('km-label-rest').textContent=this.value+' km'"/>
-        </div>
+
       </div>
 
       <!-- Restaurant extra toggles -->
@@ -4960,10 +4952,11 @@ function loadMoreLocal(shownSoFar, date) {
 let loadMorePage = 1;
 let lastSearchParams = null;
 
-async function loadMoreActivities() {
+async function loadMoreActivities(expandToRadius) {
   const apiKey = getKey();
   if (!apiKey || !lastSearchParams) return;
-  const { location, date, type, actType, envType, maxKm } = lastSearchParams;
+  const { location, date, type, actType, envType } = lastSearchParams;
+  const maxKm = expandToRadius || lastSearchParams.maxKm;
   const btn = document.getElementById('load-more-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Wird geladen…'; }
 
@@ -4991,20 +4984,24 @@ async function loadMoreActivities() {
         grid.appendChild(div);
       });
       document.getElementById('results-title').textContent = document.getElementById('results-title').textContent.replace(/^\d+/, activities.length);
-      if (moreLocal.length >= 9) appendLoadMoreBtn(date);
+      if (moreLocal.length >= 9) {
+        appendLoadMoreBtn(date);
+      } else {
+        // Lokale DB erschöpft — API mit erweitertem Radius anbieten
+        appendLoadMoreBtn(date, 100);
+      }
       if (btn) { btn.disabled = false; btn.textContent = '+ Weitere Aktivitäten laden'; }
       return;
     }
   }
 
   const existingNames = activities.map(a => a.name).join(', ');
-  const whoDesc  = type==='couple'?'Paare ohne Kinder':type==='kids'?'Familien mit Kindern':'Paare und Familien';
   const actDesc  = actType==='any'?'gemischte Auswahl':actType;
   const envDesc  = envType==='indoor'?'nur Indoor':envType==='outdoor'?'nur Outdoor':'Indoor und Outdoor';
 
   const prompt = `Du bist ein Freizeitexperte für Deutschland und Österreich.
 Nenne exakt 9 WEITERE real existierende Freizeitaktivitäten in maximal ${maxKm} km von "${location}".
-Zielgruppe: ${whoDesc}. Typ: ${actDesc}. ${envDesc}.
+Typ: ${actDesc}. ${envDesc}.
 WICHTIG: Nenne KEINE dieser bereits gezeigten Aktivitäten: ${existingNames}
 Maximale Fahrtstrecke ${maxKm} km strikt einhalten. Gute Mischung verschiedener Kategorien.
 Antworte NUR mit einem JSON-Array, kein Markdown.
@@ -5072,7 +5069,12 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
     document.getElementById('results-title').textContent = document.getElementById('results-title').textContent.replace(/^\d+/, activities.length);
 
     // Add new load-more button if we got a full batch
-    if (newVenues.length >= 9) appendLoadMoreBtn(date);
+    if (newVenues.length >= 9) {
+      const nextRadius = maxKm < 100 ? maxKm + 50 : null;
+      appendLoadMoreBtn(date, nextRadius);
+    } else if (newVenues.length > 0 && maxKm < 150) {
+      appendLoadMoreBtn(date, maxKm + 50);
+    }
 
   } catch(e) {
     showError(e.message||'Fehler beim Laden weiterer Aktivitäten.');
@@ -5080,13 +5082,16 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
   }
 }
 
-function appendLoadMoreBtn(date) {
+function appendLoadMoreBtn(date, nextRadius) {
   const grid = document.getElementById('activity-grid');
   const existing = document.getElementById('load-more-wrap');
   if (existing) existing.remove();
   const wrap = document.createElement('div');
   wrap.className = 'load-more-wrap'; wrap.id = 'load-more-wrap';
-  wrap.innerHTML = `<button class="btn-load-more" id="load-more-btn" onclick="loadMoreActivities()">+ Weitere Aktivitäten laden</button>
+  const btnText = nextRadius
+    ? `🔍 Umkreis auf ${nextRadius} km erweitern`
+    : `+ Weitere Aktivitäten laden`;
+  wrap.innerHTML = `<button class="btn-load-more" id="load-more-btn" onclick="loadMoreActivities(${nextRadius || ''})">${btnText}</button>
     <span class="load-more-hint">${activities.length} Aktivitäten angezeigt</span>`;
   grid.appendChild(wrap);
 }
@@ -5111,7 +5116,6 @@ function restoreLastSearch() {
       if (s.envType === 'outdoor') { document.getElementById('pill-outdoor')?.classList.add('on'); }
       else if (s.envType === 'indoor') { document.getElementById('pill-indoor')?.classList.add('on'); }
     }
-    if (s.maxKm) { document.getElementById('max-km').value = s.maxKm; document.getElementById('km-label').textContent = s.maxKm + ' km'; }
   } catch(_) {}
 }
 
@@ -5284,7 +5288,7 @@ function renderRestaurantGrid(rests, date, location, maxKm) {
   const grid = document.getElementById('activity-grid');
   const header = document.getElementById('results-header');
   document.getElementById('results-title').textContent = `${rests.length} Restaurants rund um ${location.split(',')[0]}`;
-  document.getElementById('results-meta').textContent = `im Umkreis von ${maxKm} km · ${date}`;
+  document.getElementById('results-meta').textContent = date;
   header.style.display = 'flex';
 
   grid.innerHTML = rests.map((r, i) => {
@@ -5587,7 +5591,7 @@ function renderGrid(acts, date, location, type, actType, maxKm) {
   const header = document.getElementById('results-header');
   const typeLabel = '';
   document.getElementById('results-title').textContent = `${acts.length} ${appMode==='restaurants'?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
-  document.getElementById('results-meta').textContent = [typeLabel, `im Umkreis von ${maxKm} km`, date].filter(Boolean).join(' · ');
+  document.getElementById('results-meta').textContent = [typeLabel, date].filter(Boolean).join(' · ');
   header.style.display='flex';
 
   grid.innerHTML = acts.map((a, i) => {
@@ -5756,8 +5760,7 @@ function readSearchParams() {
                      document.getElementById('pill-indoor')?.classList.contains('on') &&
                      !document.getElementById('pill-outdoor')?.classList.contains('on') ? 'indoor' : 'any'
                    ),
-    maxKm:         isRest ? parseInt(document.getElementById('max-km-rest').value)
-                          : parseInt(document.getElementById('max-km').value),
+    maxKm:         isRest ? 30 : 50, // Fix: Aktivitäten 50km, Restaurants 30km
     restCuisine:   isRest ? document.getElementById('rest-cuisine').value    : 'any',
     restPrice:     isRest ? document.getElementById('rest-price').value      : 'any',
     restTerrace:   isRest && document.getElementById('pill-terrace')?.classList.contains('on'),
@@ -6013,7 +6016,7 @@ async function findActivities() {
       return;
     }
 
-    appendLoadMoreBtn(p.date);
+    appendLoadMoreBtn(p.date, 100); // Erster Load-More: Umkreis auf 100km erweitern
     setProgress(100);
     setTimeout(()=>setProgress(0), 600);
 
