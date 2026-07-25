@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_43.html -->
+<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_45.html -->
 <html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
 <link rel="manifest" href="file:///C:/Users/maierchristia/Downloads/manifest.json">
 <link rel="apple-touch-icon" href="file:///C:/Users/maierchristia/Downloads/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="./index_files/css2" rel="stylesheet" media="all" onload="this.media=&#39;all&#39;">
+<link href="./Rauszeit_files/css2" rel="stylesheet" media="all" onload="this.media=&#39;all&#39;">
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"></noscript>
 <style>
   :root {
@@ -467,8 +467,8 @@
     <div class="search-form">
       <!-- Mode toggle -->
       <div class="mode-toggle" id="mode-toggle">
-        <button class="mode-btn" id="mode-act" onclick="setMode(&#39;activities&#39;)">🎯 Erleben</button>
-        <button class="mode-btn active rest-mode" id="mode-rest" onclick="setMode(&#39;restaurants&#39;)">🍽️ Essen</button>
+        <button class="mode-btn active act-mode" id="mode-act" onclick="setMode(&#39;activities&#39;)">🎯 Erleben</button>
+        <button class="mode-btn" id="mode-rest" onclick="setMode(&#39;restaurants&#39;)">🍽️ Essen</button>
       </div>
 
       <!-- Common fields -->
@@ -484,7 +484,7 @@
           <label for="trip-date">Datum</label>
           <input type="date" id="trip-date" min="2026-07-25">
         </div>
-        <div class="field" id="act-type-field" style="display: none;">
+        <div class="field" id="act-type-field" style="">
           <label for="act-type">Erlebnistyp</label>
           <select id="act-type">
             <option value="any" selected="">Alle Typen</option>
@@ -497,7 +497,7 @@
             <option value="nature">Natur &amp; Wandern</option>
           </select>
         </div>
-        <div class="field" id="rest-cuisine-inline" style="">
+        <div class="field" id="rest-cuisine-inline" style="display: none;">
           <label for="rest-cuisine">Küche</label>
           <select id="rest-cuisine">
             <option value="any">Alle Küchen</option>
@@ -515,7 +515,7 @@
       </div>
 
       <!-- Activity filters -->
-      <div id="filters-activities" style="display: none; flex-direction: column; gap: 10px;">
+      <div id="filters-activities" style="flex-direction: column; gap: 10px;">
         <div class="toggle-pills" id="act-toggles" style="margin-top:2px;">
           <button class="toggle-pill" id="pill-outdoor" onclick="togglePill(&#39;pill-outdoor&#39;)">☀️ Outdoor</button>
           <button class="toggle-pill" id="pill-indoor" onclick="togglePill(&#39;pill-indoor&#39;)">🏠 Indoor</button>
@@ -525,7 +525,7 @@
       <!-- Restaurant filters (Küche ist inline neben Datum) -->
 
       <!-- Restaurant extra toggles -->
-      <div class="toggle-pills" id="rest-toggles" style="display:none">
+      <div class="toggle-pills" id="rest-toggles" style="display: none;">
         <button class="toggle-pill" id="pill-terrace" onclick="togglePill(&#39;pill-terrace&#39;)">☀️ Terrasse</button>
         <button class="toggle-pill" id="pill-playground" onclick="togglePill(&#39;pill-playground&#39;)">🛝 Spielplatz</button>
       </div>
@@ -570,12 +570,7 @@
     <h2 id="results-title"></h2>
     <p id="results-meta"></p>
   </div>
-  <div class="activity-grid" id="activity-grid">
-    <div class="state-empty">
-      <div class="big-icon">🗺️</div>
-      <p>Wo startest du?<br>Gib deinen Ort ein und entdecke was in der Nähe auf dich wartet.</p>
-    </div>
-  </div>
+  <div class="activity-grid" id="activity-grid"><div class="state-empty"><div class="big-icon">🗺️</div><p>Wo startest du?<br>Gib deinen Ort ein und entdecke was in der Nähe auf dich wartet.</p></div></div>
 </main>
 
 <footer>
@@ -5249,7 +5244,7 @@ function setMode(mode) {
     document.getElementById('pill-outdoor')?.classList.remove('on');
     document.getElementById('pill-indoor')?.classList.remove('on');
   }
-  document.getElementById('filters-restaurants').style.display = isRest ? '' : 'none';
+  const frEl = document.getElementById('filters-restaurants'); if (frEl) frEl.style.display = isRest ? '' : 'none';
   document.getElementById('rest-toggles').style.display = isRest ? 'flex' : 'none';
 
   // Search button label + color
@@ -5990,6 +5985,9 @@ async function findActivities() {
 
     const rendered = await streamAndRenderVenues(venuesRes, p, statusInterval);
 
+    // Sort by distance
+    activities.sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
+
     if (!activities.length) {
       document.getElementById('activity-grid').innerHTML =
         `<div class="state-error"><div class="big-icon">😕</div><p>Keine Aktivitäten gefunden. Versuche einen anderen Typ oder größeren Umkreis.</p></div>`;
@@ -5998,7 +5996,7 @@ async function findActivities() {
       return;
     }
 
-    appendLoadMoreBtn(p.date, 100); // Erster Load-More: Umkreis auf 100km erweitern
+    appendLoadMoreBtn(p.date, null); // Erster Load-More: mehr im selben Radius
     setProgress(100);
     setTimeout(()=>setProgress(0), 600);
 
