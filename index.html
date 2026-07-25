@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_47.html -->
+<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_49.html -->
 <html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -443,7 +443,7 @@
   <div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
     <div>
       <p style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:4px;">👋 Willkommen bei rauszeit.</p>
-      <p style="font-size:13px;color:var(--ink-2);line-height:1.5;">Gib das Passwort ein das du erhalten hast — einmalig, danach läuft alles automatisch.</p>
+      <p style="font-size:13px;color:var(--ink-2);">Gib das Passwort ein.</p>
     </div>
     <div class="key-row">
       <input type="password" id="api-key-input" placeholder="Passwort eingeben…" autocomplete="off">
@@ -489,7 +489,7 @@
           <label for="trip-date">Datum</label>
           <input type="date" id="trip-date" min="2026-07-25">
         </div>
-        <div class="field" id="act-type-field">
+        <div class="field" id="act-type-field" style="">
           <label for="act-type">Erlebnistyp</label>
           <select id="act-type">
             <option value="any" selected="">Alle Typen</option>
@@ -502,7 +502,7 @@
             <option value="nature">Natur &amp; Wandern</option>
           </select>
         </div>
-        <div class="field" id="rest-cuisine-inline" style="display:none">
+        <div class="field" id="rest-cuisine-inline" style="display: none;">
           <label for="rest-cuisine">Küche</label>
           <select id="rest-cuisine">
             <option value="any">Alle Küchen</option>
@@ -530,7 +530,7 @@
       <!-- Restaurant filters (Küche ist inline neben Datum) -->
 
       <!-- Restaurant extra toggles -->
-      <div class="toggle-pills" id="rest-toggles" style="display:none">
+      <div class="toggle-pills" id="rest-toggles" style="display: none;">
         <button class="toggle-pill" id="pill-terrace" onclick="togglePill(&#39;pill-terrace&#39;)">☀️ Terrasse</button>
         <button class="toggle-pill" id="pill-playground" onclick="togglePill(&#39;pill-playground&#39;)">🛝 Spielplatz</button>
       </div>
@@ -1805,29 +1805,7 @@ const LOCAL_VENUES = [
     "lat": 47.761,
     "lon": 12.645
   },
-  {
-    "name": "Ilmsee Pfaffenhofen",
-    "location": "Pfaffenhofen an der Ilm, Bayern",
-    "category": "water",
-    "environment": "outdoor",
-    "emoji": "🏊",
-    "distanceKm": 2,
-    "driveMinutes": 5,
-    "suitableFor": "both",
-    "entranceFee": "Kostenlos",
-    "openingHours": "Jederzeit zugänglich",
-    "durationHours": 2,
-    "googleRating": 4.1,
-    "reviewCount": 420,
-    "description": "Natürlicher Badesee direkt in Pfaffenhofen — sauberes Wasser, Liegewiesen und ein entspanntes Ambiente ohne großen Trubel. Ideal für spontane Badetage direkt vor der Haustür.",
-    "tips": [
-      "Kostenlos und fußläufig erreichbar",
-      "Früh kommen für ruhige Plätze",
-      "Eigene Verpflegung mitbringen"
-    ],
-    "lat": 48.521,
-    "lon": 11.508
-  },
+
   {
     "name": "Auwaldsee Ingolstadt",
     "location": "Ingolstadt, Bayern",
@@ -3267,7 +3245,7 @@ const LOCAL_VENUES = [
     "lon": 11.133
   },
   {
-    "name": "Badesee Inchenhofen",
+    "name": "Badesee Radersdorf",
     "location": "Inchenhofen, Bayern",
     "region": "inchenhofen",
     "category": "water",
