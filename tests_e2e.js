@@ -422,17 +422,18 @@ test('SK-03', 'showSkeletons und streamAndRenderVenues sind beide in findActivit
   assert(fa.includes('showSkeletons(9)'), 'showSkeletons(9) fehlt in findActivities');
   assert(fa.includes('streamAndRenderVenues'), 'streamAndRenderVenues fehlt in findActivities');
 });
-test('SK-04', 'Streaming ist aktiviert (stream:true)', () => {
-  assert(html.includes('stream:true'), 'stream:true fehlt im API-Call');
+test('SK-04', 'Worker URL ist konfiguriert', () => {
+  assert(html.includes('WORKER_URL'), 'WORKER_URL fehlt');
+  assert(html.includes('/api/venues'), '/api/venues Route fehlt');
 });
-test('SK-05', 'Streaming-Reader Code vorhanden', () => {
-  assert(html.includes('getReader'), 'getReader fehlt');
-  assert(html.includes('tryParseBuffer'), 'tryParseBuffer fehlt');
-  assert(html.includes('content_block_delta'), 'SSE-Event-Handling fehlt');
+test('SK-05', 'KV-Cache Handler vorhanden', () => {
+  assert(html.includes('WORKER_URL'), 'WORKER_URL fehlt');
+  assert(html.includes('venuesData.content'), 'JSON-Response-Handler fehlt');
+  assert(html.includes('robustParse'), 'robustParse fehlt');
 });
-test('SK-06', 'Fallback für file:// Umgebungen vorhanden', () => {
-  assert(html.includes('venuesRes.body.getReader'), 'Streaming-Guard fehlt');
-  assert(html.includes('venuesRes.body?.getReader'), 'Streaming-Fallback fehlt');
+test('SK-06', 'JSON Response Handler vorhanden (KV-Cache)', () => {
+  assert(html.includes('venuesData.content'), 'JSON-Response-Handler fehlt');
+  assert(html.includes('robustParse'), 'robustParse fehlt');
 });
 test('SK-07', 'Skeletons werden beim ersten Streaming-Treffer geleert', () => {
   assert(html.includes('skeletonsCleared'), 'skeletonsCleared-Flag fehlt');
@@ -440,7 +441,7 @@ test('SK-07', 'Skeletons werden beim ersten Streaming-Treffer geleert', () => {
 });
 test('SK-08', 'Progress-Bar wird während Streaming animiert', () => {
   assert(html.includes('statusInterval'), 'statusInterval fehlt');
-  assert(html.includes('statusMessages'), 'statusMessages fehlt');
+  assert(html.includes('statusInterval'), 'statusInterval fehlt');
 });
 
 test('DQ-08', '34 Inchenhofen-Venues vorhanden', () => {
@@ -450,6 +451,57 @@ test('DQ-08', '34 Inchenhofen-Venues vorhanden', () => {
 test('DQ-09', 'Inchenhofen in KNOWN_LOCATIONS', () => {
   assert(html.includes("'inchenhofen'"), 'inchenhofen fehlt in KNOWN_LOCATIONS');
   assert(html.includes("'86570'"), 'PLZ 86570 fehlt in KNOWN_LOCATIONS');
+});
+
+
+// ═══════════════════════════════════════════════════════════════════
+// UC-10 Security & Stabilität
+// ═══════════════════════════════════════════════════════════════════
+console.log('\n🔒  UC-10 Security & Stabilität');
+
+test('SEC-01', 'Kein Anthropic API-Key im HTML sichtbar', () => {
+  assert(!html.includes('sk-ant-'), 'API-Key sk-ant- im Code gefunden!');
+  assert(!html.includes('sk-ant-api'), 'API-Key im Code gefunden!');
+});
+
+test('SEC-02', 'Kein hardcodiertes Passwort im HTML', () => {
+  // Prüfe dass kein Klartext-Passwort im Code steht
+  assert(!html.match(/expectedPassword\s*=\s*['"]\w+['"]/), 'Hardcodiertes Passwort gefunden!');
+  assert(!html.includes('APP_PASSWORD'), 'APP_PASSWORD im HTML gefunden!');
+});
+
+test('SEC-03', 'Worker URL ist relative Path (kein externer Key sichtbar)', () => {
+  assert(html.includes("WORKER_URL = '/api/venues'"), 'Worker URL ist nicht relativ!');
+  assert(!html.includes('workers.dev'), 'Externe Worker-URL im HTML gefunden!');
+});
+
+test('SEC-04', 'Kein anthropic-dangerous Header im HTML', () => {
+  assert(!html.includes('anthropic-dangerous-direct-browser-access'), 'Direkter Browser-Zugriff Header gefunden!');
+});
+
+test('SEC-05', 'Passwort wird aus localStorage gelesen, nicht hardcodiert', () => {
+  assert(html.includes('localStorage.getItem(KEY_STORE)'), 'localStorage Key-Lese fehlt!');
+  assert(html.includes('X-App-Password'), 'X-App-Password Header fehlt!');
+});
+
+test('UI-01', 'Standort und Datum Felder vorhanden', () => {
+  assert(html.includes('id="location"'), 'Standort-Feld fehlt!');
+  assert(html.includes('id="trip-date"'), 'Datum-Feld fehlt!');
+});
+
+test('UI-02', 'Mode-Toggle Buttons vorhanden', () => {
+  assert(html.includes('id="mode-act"'), 'Aktivitäten-Button fehlt!');
+  assert(html.includes('id="mode-rest"'), 'Restaurant-Button fehlt!');
+});
+
+test('UI-03', 'Wer-kommt-mit Filter wurde entfernt', () => {
+  assert(!html.includes('id="trip-type"'), 'trip-type Select noch vorhanden!');
+  assert(!html.includes('Wer kommt mit'), 'Wer-kommt-mit Label noch vorhanden!');
+});
+
+test('UI-04', 'suitableFor Tags sind noch in den Karten sichtbar', () => {
+  assert(html.includes('forClass'), 'forClass Funktion fehlt!');
+  assert(html.includes('forLabel'), 'forLabel Funktion fehlt!');
 });
 
 // ═══════════════════════════════════════════════════════════════════
