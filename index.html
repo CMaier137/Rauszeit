@@ -487,12 +487,7 @@
           <input type="date" id="trip-date"/>
         </div>
         <div class="field">
-          <label for="trip-type">Wer kommt mit?</label>
-          <select id="trip-type">
-            <option value="couple">Nur wir zwei</option>
-            <option value="kids">Mit Kindern</option>
-            <option value="both">Egal</option>
-          </select>
+          
         </div>
       </div>
 
@@ -5111,7 +5106,6 @@ function restoreLastSearch() {
     if (s.date && s.date >= todayStr) {
       document.getElementById('trip-date').value = s.date;
     }
-    if (s.type) document.getElementById('trip-type').value = s.type;
     if (s.actType) document.getElementById('act-type').value = s.actType;
     if (s.envType) {
       if (s.envType === 'outdoor') { document.getElementById('pill-outdoor')?.classList.add('on'); }
@@ -5591,7 +5585,7 @@ function buildActivityCard(a, i, date, location, type, actType, maxKm) {
 function renderGrid(acts, date, location, type, actType, maxKm) {
   const grid = document.getElementById('activity-grid');
   const header = document.getElementById('results-header');
-  const typeLabel = type==='couple'?'für Paare':type==='kids'?'mit Kindern':'';
+  const typeLabel = '';
   document.getElementById('results-title').textContent = `${acts.length} ${appMode==='restaurants'?'Restaurants':'Aktivitäten'} rund um ${location.split(',')[0]}`;
   document.getElementById('results-meta').textContent = [typeLabel, `im Umkreis von ${maxKm} km`, date].filter(Boolean).join(' · ');
   header.style.display='flex';
@@ -5712,7 +5706,6 @@ function searchLocalDB(maxKm, actType, envType, whoFor, venuePool) {
   }
 
   if (envType !== 'any') results = results.filter(v => v.environment === envType);
-  if (whoFor !== 'both') results = results.filter(v => v.suitableFor === whoFor || v.suitableFor === 'both');
 
   results.sort((a, b) => a.distanceKm - b.distanceKm);
 
@@ -5742,7 +5735,6 @@ function loadMoreLocalDB(maxKm, actType, envType, whoFor, excludeNames, venuePoo
     .filter(v => v.distanceKm <= maxKm)
     .filter(v => actType === 'any' || v.category === actType)
     .filter(v => envType === 'any' || v.environment === envType)
-    .filter(v => whoFor === 'both' || v.suitableFor === whoFor || v.suitableFor === 'both')
     .filter(v => !excludeNames.includes(v.name))
     .sort((a, b) => a.distanceKm - b.distanceKm);
   return results.slice(0, 9);
@@ -5755,7 +5747,7 @@ function readSearchParams() {
   return {
     location:      document.getElementById('location').value.trim(),
     date:          document.getElementById('trip-date').value,
-    type:          document.getElementById('trip-type').value,
+    type:          'both',
     isRest,
     actType:       isRest ? 'restaurant' : document.getElementById('act-type').value,
     envType:       isRest ? 'any' : (
@@ -5832,12 +5824,11 @@ function queryAndRenderLocalDB(p, btn) {
 // ── Baut den Claude-Prompt ───────────────────────────────────────
 function buildVenuesPrompt(p) {
   const { location, type, actType, envType, maxKm } = p;
-  const whoDesc = type==='couple'?'Paare ohne Kinder':type==='kids'?'Familien mit Kindern':'Paare und Familien';
   const actDesc = actType==='any'?'gemischte Auswahl (Abenteuer, Natur, Kultur, Tiere, Wasser, Museen, Freizeitparks)':actType;
   const envDesc = envType==='indoor'?'nur Indoor-Aktivitäten':envType==='outdoor'?'nur Outdoor-Aktivitäten':'Indoor und Outdoor';
   return `Du bist ein Freizeitexperte für Deutschland und Österreich.
 Nenne exakt 9 real existierende Freizeitaktivitäten und Ausflugsziele in maximal ${maxKm} km Fahrtstrecke von "${location}" (Deutschland).
-Zielgruppe: ${whoDesc}. Aktivitätstyp: ${actDesc}. ${envDesc}.
+Aktivitätstyp: ${actDesc}. ${envDesc}.
 
 WICHTIG: Nur ECHTE, NAMENTLICH bekannte Orte. Maximale Fahrtstrecke ${maxKm} km – strikt einhalten. Gute Mischung.
 Antworte NUR mit einem JSON-Array, kein Markdown, keine Erklärung.
