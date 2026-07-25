@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_43.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rauszeit</title>
 <meta name="theme-color" content="#c45c2a">
@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="rauszeit.">
 <meta name="description" content="Dein persönlicher Ausflug- und Restaurant-Finder für Tagesausflüge und Wochenenden.">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="manifest" href="file:///C:/Users/maierchristia/Downloads/manifest.json">
+<link rel="apple-touch-icon" href="file:///C:/Users/maierchristia/Downloads/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./index_files/css2" rel="stylesheet" media="all" onload="this.media=&#39;all&#39;">
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"></noscript>
 <style>
   :root {
@@ -81,14 +81,14 @@
   .fav-count{background:var(--accent);color:var(--white);border-radius:10px;font-size:11px;padding:1px 6px;display:none;font-weight:500;}
 
   /* ── HERO ── */
-  .hero{background:var(--ink);padding:4rem 2.5rem 3rem;color:var(--white);position:relative;overflow:hidden;}
+  .hero{background:var(--ink);padding:3rem 1.5rem 2rem;color:var(--white);position:relative;overflow:hidden;} .hero-inner{max-width:560px;margin:0 auto;}
   /* Subtle texture pattern */
   .hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(196,92,42,.12) 0%,transparent 60%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.04) 0%,transparent 50%);pointer-events:none;}
   .hero-inner{max-width:1040px;margin:0 auto;position:relative;}
-  .hero-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent-mid);font-weight:500;margin-bottom:1rem;}
+  .hero-eyebrow{display:none;}
   .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,56px);font-weight:400;line-height:1.1;margin-bottom:.75rem;letter-spacing:-.5px;}
   .hero h1 em{color:var(--accent-mid);font-style:italic;}
-  .hero-sub{font-size:16px;color:rgba(255,255,255,.55);margin-bottom:2.5rem;max-width:520px;line-height:1.6;}
+  .hero-sub{display:none;}
 
   /* Search form */
   .search-form{display:flex;flex-direction:column;gap:10px;}
@@ -439,10 +439,10 @@
 <body>
 <div id="progress-bar"></div>
 
-<div id="api-banner">
+<div id="api-banner" style="display: none;">
   <p><strong>Passwort eingeben</strong> — Gib das Passwort ein, das du von rauszeit. erhalten hast.</p>
   <div class="key-row">
-    <input type="password" id="api-key-input" placeholder="Passwort…" autocomplete="off"/>
+    <input type="password" id="api-key-input" placeholder="Passwort…" autocomplete="off">
     <button class="btn-save-key" onclick="saveKey()">Speichern</button>
     <span class="key-saved" id="key-saved">✓ Gespeichert</span>
   </div>
@@ -451,101 +451,83 @@
 <nav>
   <div class="logo">raus<span>zeit.</span></div>
   <div class="nav-right">
-    <span class="nav-tagline">Ausflüge & Restaurants. Immer einen Plan.</span>
+    <span class="nav-tagline">Ausflüge &amp; Restaurants. Immer einen Plan.</span>
     <button class="fav-nav-btn" onclick="toggleFavPanel()">
-      ❤️ Favoriten <span class="fav-count" id="fav-count">0</span>
+      ❤️ Favoriten <span class="fav-count" id="fav-count" style="display: none;">0</span>
     </button>
     <button class="visited-nav-btn" onclick="toggleVisitedPanel()">
-      ✓ Besucht <span class="visited-count" id="visited-count">0</span>
+      ✓ Besucht <span class="visited-count" id="visited-count" style="display: none;">0</span>
     </button>
   </div>
 </nav>
 
 <section class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Ausflüge · Restaurants · Erlebnisse</p>
     <h1>Raus aus dem Alltag,<br><em>rein ins Erlebnis</em></h1>
-    <p class="hero-sub">Kein Plan für das Wochenende oder freie Tage? Einfach Ort eingeben — wir finden Ausflüge und Restaurants die sich lohnen.</p>
     <div class="search-form">
       <!-- Mode toggle -->
       <div class="mode-toggle" id="mode-toggle">
-        <button class="mode-btn active act-mode" id="mode-act" onclick="setMode('activities')">🎯 Aktivitäten & Ausflüge</button>
-        <button class="mode-btn" id="mode-rest" onclick="setMode('restaurants')">🍽️ Essen & Trinken</button>
+        <button class="mode-btn" id="mode-act" onclick="setMode(&#39;activities&#39;)">🎯 Erleben</button>
+        <button class="mode-btn active rest-mode" id="mode-rest" onclick="setMode(&#39;restaurants&#39;)">🍽️ Essen</button>
       </div>
 
       <!-- Common fields -->
       <div class="field">
         <label for="location">Standort</label>
         <div class="autocomplete-wrap">
-          <input type="text" id="location" placeholder="z.B. Pfaffenhofen, Miedzywodzie…" value="Pfaffenhofen an der Ilm, Deutschland" autocomplete="off" oninput="onLocationInput(this.value)" onblur="setTimeout(closeAutocomplete,150)"/>
+          <input type="text" id="location" placeholder="z.B. Pfaffenhofen, Miedzywodzie…" value="Pfaffenhofen an der Ilm, Deutschland" autocomplete="off" oninput="onLocationInput(this.value)" onblur="setTimeout(closeAutocomplete,150)">
           <div class="autocomplete-list" id="autocomplete-list" style="display:none"></div>
         </div>
       </div>
       <div class="fields-row" style="margin-bottom:0">
         <div class="field">
           <label for="trip-date">Datum</label>
-          <input type="date" id="trip-date"/>
+          <input type="date" id="trip-date" min="2026-07-25">
         </div>
-        <div class="field">
-          
+        <div class="field" id="act-type-field" style="display: none;">
+          <label for="act-type">Erlebnistyp</label>
+          <select id="act-type">
+            <option value="any" selected="">Alle Typen</option>
+            <option value="adventure">Abenteuer &amp; Outdoor</option>
+            <option value="animals">Zoos &amp; Tiere</option>
+            <option value="water">Wasserparks &amp; Seen</option>
+            <option value="culture">Kultur &amp; Geschichte</option>
+            <option value="museum">Museum</option>
+            <option value="theme">Freizeitparks</option>
+            <option value="nature">Natur &amp; Wandern</option>
+          </select>
+        </div>
+        <div class="field" id="rest-cuisine-inline" style="">
+          <label for="rest-cuisine">Küche</label>
+          <select id="rest-cuisine">
+            <option value="any">Alle Küchen</option>
+            <option value="polish">Polnisch</option>
+            <option value="italian">Italienisch</option>
+            <option value="fish">Fisch</option>
+            <option value="cafe">Café</option>
+            <option value="snacks">Snacks &amp; Grill</option>
+            <option value="icecream">Eis</option>
+            <option value="asian">Asiatisch</option>
+            <option value="german">Bayerisch</option>
+            <option value="other">International</option>
+          </select>
         </div>
       </div>
 
       <!-- Activity filters -->
-      <div id="filters-activities" style="display:flex;flex-direction:column;gap:14px;">
-        <div class="field">
-          <label for="act-type">Aktivitätstyp</label>
-          <select id="act-type">
-            <option value="any" selected>Alle Typen</option>
-            <option value="adventure">Abenteuer & Outdoor</option>
-            <option value="animals">Zoos & Tiere</option>
-            <option value="water">Wasserparks & Seen</option>
-            <option value="culture">Kultur & Geschichte</option>
-            <option value="museum">Museum</option>
-            <option value="theme">Freizeitparks</option>
-            <option value="nature">Natur & Wandern</option>
-          </select>
-        </div>
-
+      <div id="filters-activities" style="display: none; flex-direction: column; gap: 10px;">
         <div class="toggle-pills" id="act-toggles" style="margin-top:2px;">
-          <button class="toggle-pill" id="pill-outdoor" onclick="togglePill('pill-outdoor')">☀️ Outdoor</button>
-          <button class="toggle-pill" id="pill-indoor" onclick="togglePill('pill-indoor')">🏠 Indoor</button>
+          <button class="toggle-pill" id="pill-outdoor" onclick="togglePill(&#39;pill-outdoor&#39;)">☀️ Outdoor</button>
+          <button class="toggle-pill" id="pill-indoor" onclick="togglePill(&#39;pill-indoor&#39;)">🏠 Indoor</button>
         </div>
       </div>
 
-      <!-- Restaurant filters -->
-      <div id="filters-restaurants" style="display:none">
-        <div class="fields-row" style="margin-bottom:10px">
-          <div class="field">
-            <label for="rest-cuisine">Küche</label>
-            <select id="rest-cuisine">
-              <option value="any">Alle Küchen</option>
-              <option value="polish">Polnisch</option>
-              <option value="italian">Italienisch</option>
-              <option value="fish">Fisch</option>
-              <option value="cafe">Café</option>
-              <option value="snacks">Snacks & Grill</option>
-              <option value="icecream">Eis</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="rest-price">Preislage</label>
-            <select id="rest-price">
-              <option value="any">Alle</option>
-              <option value="€">€ Günstig</option>
-              <option value="€€">€€ Mittel</option>
-              <option value="€€€">€€€ Gehoben</option>
-            </select>
-          </div>
-        </div>
-
-      </div>
+      <!-- Restaurant filters (Küche ist inline neben Datum) -->
 
       <!-- Restaurant extra toggles -->
       <div class="toggle-pills" id="rest-toggles" style="display:none">
-        <button class="toggle-pill" id="pill-terrace" onclick="togglePill('pill-terrace')">☀️ Terrasse</button>
-        <button class="toggle-pill" id="pill-playground" onclick="togglePill('pill-playground')">🛝 Spielplatz</button>
-        <button class="toggle-pill" id="pill-noreserv" onclick="togglePill('pill-noreserv')">📞 Keine Reservierung</button>
+        <button class="toggle-pill" id="pill-terrace" onclick="togglePill(&#39;pill-terrace&#39;)">☀️ Terrasse</button>
+        <button class="toggle-pill" id="pill-playground" onclick="togglePill(&#39;pill-playground&#39;)">🛝 Spielplatz</button>
       </div>
 
       <div class="search-btn-row">
@@ -557,7 +539,7 @@
     <div class="spot-search-wrap">
       <p class="spot-search-label">Oder direkt nach einem Ort suchen</p>
       <div class="spot-search-row">
-        <input type="text" id="spot-input" class="spot-input" placeholder="z.B. Therme Erding, Legoland Günzburg, Kletterpark Jetzendorf…"/>
+        <input type="text" id="spot-input" class="spot-input" placeholder="z.B. Therme Erding, Legoland Günzburg, Kletterpark Jetzendorf…">
         <button class="btn-spot" onclick="searchSpot()" id="spot-btn">Nachschlagen</button>
       </div>
     </div>
@@ -570,7 +552,7 @@
       <h3>❤️ Meine Favoriten</h3>
       <button class="btn-close" onclick="toggleFavPanel()">✕</button>
     </div>
-    <div class="fav-list" id="fav-list"></div>
+    <div class="fav-list" id="fav-list"><p class="fav-empty">Noch keine Favoriten gespeichert. Klicke auf 🤍 bei einer Aktivität.</p></div>
   </div>
 
   <div id="visited-panel" style="display:none;background:var(--white);border:1.5px solid var(--paper-3);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;">
@@ -578,7 +560,7 @@
       <h3>✓ Bereits besucht</h3>
       <button class="btn-close" onclick="toggleVisitedPanel()">✕</button>
     </div>
-    <div class="fav-list" id="visited-list"></div>
+    <div class="fav-list" id="visited-list"><p class="fav-empty">Noch keine besuchten Orte. Im Detail-Panel auf "Als besucht markieren" klicken.</p></div>
   </div>
 
   <div id="spot-result"></div>
@@ -5104,7 +5086,7 @@ function restoreLastSearch() {
   try {
     const s = JSON.parse(localStorage.getItem(LAST_SEARCH_STORE)||'null');
     if (!s) return;
-    if (s.mode && s.mode !== appMode) setMode(s.mode);
+    setMode(s.mode || appMode);
     if (s.location) document.getElementById('location').value = s.location;
     // Only restore date if it's today or in the future (no max limit — weather handles out-of-range silently)
     const todayStr = new Date().toISOString().split('T')[0];
@@ -5260,6 +5242,8 @@ function setMode(mode) {
 
   // Show/hide filter rows
   document.getElementById('filters-activities').style.display = isRest ? 'none' : '';
+  document.getElementById('act-type-field').style.display = isRest ? 'none' : '';
+  document.getElementById('rest-cuisine-inline').style.display = isRest ? '' : 'none';
   // Reset env pills on mode switch
   if (!isRest) {
     document.getElementById('pill-outdoor')?.classList.remove('on');
@@ -5762,10 +5746,9 @@ function readSearchParams() {
                    ),
     maxKm:         isRest ? 30 : 50, // Fix: Aktivitäten 50km, Restaurants 30km
     restCuisine:   isRest ? document.getElementById('rest-cuisine').value    : 'any',
-    restPrice:     isRest ? document.getElementById('rest-price').value      : 'any',
+    restPrice:     'any',
     restTerrace:   isRest && document.getElementById('pill-terrace')?.classList.contains('on'),
     restPlayground:isRest && document.getElementById('pill-playground')?.classList.contains('on'),
-    restNoReserv:  isRest && document.getElementById('pill-noreserv')?.classList.contains('on'),
   };
 }
 
@@ -5773,7 +5756,7 @@ function readSearchParams() {
 // Gibt true zurück wenn lokale Ergebnisse gefunden und gerendert wurden
 function queryAndRenderLocalDB(p, btn) {
   const { location, date, type, isRest, actType, envType, maxKm,
-          restCuisine, restPrice, restTerrace, restPlayground, restNoReserv } = p;
+          restCuisine, restPrice, restTerrace, restPlayground } = p;
   const t0 = Date.now();
   const maxKmNum = Number(maxKm);
   const localRegion = detectLocalRegion(location);
@@ -5791,7 +5774,6 @@ function queryAndRenderLocalDB(p, btn) {
       .filter(r => restPrice   === 'any' || r.priceRange === restPrice)
       .filter(r => !restTerrace    || r.terrace)
       .filter(r => !restPlayground || r.playground)
-      .filter(r => !restNoReserv   || !r.reservationNeeded);
     localInitial   = restFilter(localInitial);
     localRemainder = restFilter(localRemainder);
   }
@@ -6218,5 +6200,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
