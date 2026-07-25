@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════
 // E2E Tests — rauszeit. (simuliert Browser-Verhalten in Node.js)
 // Run: node tests_e2e.js
+// Nur ein Kommentar
 // ═══════════════════════════════════════════════════════════════════
 const fs = require('fs');
 const html = fs.readFileSync('/mnt/user-data/outputs/trip-finder.html', 'utf8');
