@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_46.html -->
+<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_47.html -->
 <html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -440,11 +440,16 @@
 <div id="progress-bar"></div>
 
 <div id="api-banner" style="display: none;">
-  <p><strong>Passwort eingeben</strong> — Gib das Passwort ein, das du von rauszeit. erhalten hast.</p>
-  <div class="key-row">
-    <input type="password" id="api-key-input" placeholder="Passwort…" autocomplete="off">
-    <button class="btn-save-key" onclick="saveKey()">Speichern</button>
-    <span class="key-saved" id="key-saved">✓ Gespeichert</span>
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
+    <div>
+      <p style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:4px;">👋 Willkommen bei rauszeit.</p>
+      <p style="font-size:13px;color:var(--ink-2);line-height:1.5;">Gib das Passwort ein das du erhalten hast — einmalig, danach läuft alles automatisch.</p>
+    </div>
+    <div class="key-row">
+      <input type="password" id="api-key-input" placeholder="Passwort eingeben…" autocomplete="off">
+      <button class="btn-save-key" onclick="saveKey()">Los geht's →</button>
+    </div>
+    <span id="key-feedback" style="display:none;font-size:13px;font-weight:500;"></span>
   </div>
 </div>
 
@@ -484,7 +489,7 @@
           <label for="trip-date">Datum</label>
           <input type="date" id="trip-date" min="2026-07-25">
         </div>
-        <div class="field" id="act-type-field" style="">
+        <div class="field" id="act-type-field">
           <label for="act-type">Erlebnistyp</label>
           <select id="act-type">
             <option value="any" selected="">Alle Typen</option>
@@ -497,7 +502,7 @@
             <option value="nature">Natur &amp; Wandern</option>
           </select>
         </div>
-        <div class="field" id="rest-cuisine-inline" style="display: none;">
+        <div class="field" id="rest-cuisine-inline" style="display:none">
           <label for="rest-cuisine">Küche</label>
           <select id="rest-cuisine">
             <option value="any">Alle Küchen</option>
@@ -525,7 +530,7 @@
       <!-- Restaurant filters (Küche ist inline neben Datum) -->
 
       <!-- Restaurant extra toggles -->
-      <div class="toggle-pills" id="rest-toggles" style="display: none;">
+      <div class="toggle-pills" id="rest-toggles" style="display:none">
         <button class="toggle-pill" id="pill-terrace" onclick="togglePill(&#39;pill-terrace&#39;)">☀️ Terrasse</button>
         <button class="toggle-pill" id="pill-playground" onclick="togglePill(&#39;pill-playground&#39;)">🛝 Spielplatz</button>
       </div>
@@ -4704,6 +4709,8 @@ function durationStr(h) {
 
 // ── Spot search (direct venue lookup) ────────────────────────────
 async function searchSpot() {
+  const apiKey = getKey();
+  if (!apiKey) { showError('Bitte Passwort eingeben.'); document.getElementById('api-banner').style.display='flex'; return; }
 
   const spotName = document.getElementById('spot-input').value.trim();
   if (!spotName) { showError('Bitte einen Ort oder eine Aktivität eingeben.'); return; }
@@ -5096,13 +5103,52 @@ function restoreLastSearch() {
   } catch(_) {}
 }
 
-function saveKey() {
+async function saveKey() {
   const val = document.getElementById('api-key-input').value.trim();
-  if (!val) { showError('Bitte Passwort eingeben.'); return; }
+  const feedback = document.getElementById('key-feedback');
+  if (!val) {
+    feedback.style.display = 'block';
+    feedback.style.color = 'var(--rose)';
+    feedback.textContent = '⚠️ Bitte ein Passwort eingeben.';
+    return;
+  }
+  const btn = document.querySelector('.btn-save-key');
+  btn.disabled = true; btn.textContent = 'Wird geprüft…';
+  feedback.style.display = 'none';
+
+  // Passwort sofort speichern und testen
   localStorage.setItem(KEY_STORE, val);
-  document.getElementById('key-saved').style.display = 'flex';
-  document.getElementById('api-key-input').value = '●'.repeat(val.length);
-  setTimeout(() => document.getElementById('api-banner').style.display = 'none', 1200);
+
+  // Test-Call an den Worker
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-App-Password': val },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'test' }] })
+    });
+    if (res.status === 401) {
+      localStorage.removeItem(KEY_STORE);
+      feedback.style.display = 'block';
+      feedback.style.color = 'var(--rose)';
+      feedback.textContent = '❌ Passwort falsch. Bitte nochmal versuchen.';
+      document.getElementById('api-key-input').value = '';
+      btn.disabled = false; btn.textContent = 'Los geht’s →';
+      return;
+    }
+    // Passwort korrekt
+    feedback.style.display = 'block';
+    feedback.style.color = 'var(--moss)';
+    feedback.textContent = '✓ Passwort korrekt — willkommen!';
+    document.getElementById('api-key-input').value = '●'.repeat(val.length);
+    setTimeout(() => document.getElementById('api-banner').style.display = 'none', 1200);
+  } catch(e) {
+    // Netzwerkfehler — Passwort trotzdem speichern (offline-fall)
+    feedback.style.display = 'block';
+    feedback.style.color = 'var(--moss)';
+    feedback.textContent = '✓ Gespeichert.';
+    setTimeout(() => document.getElementById('api-banner').style.display = 'none', 1000);
+  }
+  btn.disabled = false; btn.textContent = 'Los geht’s →';
 }
 function getKey() { return localStorage.getItem(KEY_STORE) || ''; }
 
