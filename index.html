@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_45.html -->
+<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_46.html -->
 <html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -5263,6 +5263,38 @@ function togglePill(id) {
 }
 
 // ── Restaurant rendering ──────────────────────────────────────────
+// Baut eine einzelne Restaurant-Karte als HTML-String
+function buildRestaurantCardHtml(r, idx) {
+  const hrs=Math.floor((r.driveMinutes||0)/60), mins=(r.driveMinutes||0)%60;
+  const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
+  const cuisineClass=`cuisine-${r.cuisine||'other'}`;
+  const cpillClass=`cpill-${r.cuisine||'other'}`;
+  const favActive=isFav(r.name);
+  return `<div class="rest-card" id="card-${idx}" onclick="showRestaurantDetail(${idx},'')">
+    <div class="rest-thumb">
+      <div class="rest-thumb-bg ${cuisineClass}"></div>
+      <span style="position:relative;z-index:1">${r.emoji||'🍽️'}</span>
+      <span class="rest-cuisine-pill ${cpillClass}">${cuisineLabel(r.cuisine||'other')}</span>
+      <span class="rest-price-badge">${r.priceRange||r.entranceFee||''}</span>
+      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
+    </div>
+    <div class="rest-body">
+      <div class="rest-name">${r.name}</div>
+      <div class="rest-loc">${r.location||''}</div>
+      <div class="rest-specialty">${r.specialty||r.description||''}</div>
+      <div class="rest-footer">
+        <span class="stat">${svgIcon('road')} ${r.distanceKm||'?'} km · ${driveStr}</span>
+        ${r.googleRating?`<div style="display:flex;align-items:center;gap:4px">${starsHtml(r.googleRating,r.reviewCount)}</div>`:''}
+      </div>
+      <div class="rest-mini-badges">
+        ${r.terrace?'<span class="rest-mini-badge rmb-terrace">☀️ Terrasse</span>':''}
+        ${r.playground?'<span class="rest-mini-badge rmb-play">🛝 Spielplatz</span>':''}
+        ${r.childFriendly?'<span class="rest-mini-badge rmb-kids">👶 Kids</span>':''}
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderRestaurantGrid(rests, date, location, maxKm) {
   const grid = document.getElementById('activity-grid');
   const header = document.getElementById('results-header');
@@ -5803,7 +5835,19 @@ function queryAndRenderLocalDB(p, btn) {
 
 // ── Baut den Claude-Prompt ───────────────────────────────────────
 function buildVenuesPrompt(p) {
-  const { location, type, actType, envType, maxKm } = p;
+  const { location, type, actType, envType, maxKm, isRest, restCuisine } = p;
+
+  if (isRest) {
+    const cuisineDesc = restCuisine && restCuisine !== 'any' ? `Küche: ${restCuisine}.` : 'Alle Küchen.';
+    return `Du bist ein Restaurantexperte für Deutschland und Österreich.
+Nenne exakt 9 real existierende Restaurants in maximal ${maxKm} km von "${location}".
+${cuisineDesc} Nur ECHTE, bekannte Restaurants. Gute Mischung verschiedener Küchen und Preislagen.
+Antworte NUR mit einem JSON-Array, kein Markdown, keine Erklärung.
+
+Jedes Objekt:
+{"name":"Exakter Restaurantname","location":"Stadt, Region","category":"restaurant","environment":"indoor|outdoor","emoji":"1 Emoji","distanceKm":3,"driveMinutes":8,"suitableFor":"both","entranceFee":"€€","openingHours":"Di–So 12–22 Uhr","durationHours":1.5,"googleRating":4.3,"reviewCount":580,"description":"2 motivierende Sätze","tips":["Tipp 1","Tipp 2"],"lat":48.123,"lon":11.456,"cuisine":"german|italian|asian|fish|cafe|other","specialty":"Hausgemachte Pasta, Wildgerichte","playground":false,"terrace":true,"reservationNeeded":false,"closedOn":"Montag","childFriendly":true,"priceRange":"€€"}`;
+  }
+
   const actDesc = actType==='any'?'gemischte Auswahl (Abenteuer, Natur, Kultur, Tiere, Wasser, Museen, Freizeitparks)':actType;
   const envDesc = envType==='indoor'?'nur Indoor-Aktivitäten':envType==='outdoor'?'nur Outdoor-Aktivitäten':'Indoor und Outdoor';
   return `Du bist ein Freizeitexperte für Deutschland und Österreich.
@@ -5832,7 +5876,10 @@ async function streamAndRenderVenues(venuesRes, p, statusInterval) {
   let skeletonsCleared = false;
   const renderOneVenue = (venue) => {
     activities.push(venue);
-    const cardHtml = buildActivityCard(venue, rendered, date, location, type, actType, maxKm);
+    // Restaurants bekommen ihre eigene Karte
+    const cardHtml = (isRest || venue.category === 'restaurant')
+      ? buildRestaurantCardHtml(venue, rendered)
+      : buildActivityCard(venue, rendered, date, location, type, actType, maxKm);
     if (!skeletonsCleared) { grid.innerHTML = ''; skeletonsCleared = true; }
     grid.insertAdjacentHTML('beforeend', cardHtml);
     rendered++;
