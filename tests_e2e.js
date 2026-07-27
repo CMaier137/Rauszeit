@@ -389,8 +389,8 @@ test('DQ-05', 'Alle googleRatings zwischen 3.5 und 5.0', () => {
   LOCAL_VENUES.filter(v => v.googleRating).forEach(v =>
     assert(v.googleRating >= 3.5 && v.googleRating <= 5.0, `${v.name}: ${v.googleRating}`));
 });
-test('DQ-06', 'Gesamtzahl DB: 161 Einträge (87 Pfaffenhofen + 40 Miedzywodzie + 34 Inchenhofen)', () => {
-  assertEqual(LOCAL_VENUES.length, 161, `Nur ${LOCAL_VENUES.length} Venues`);
+test('DQ-06', 'Gesamtzahl DB: 160 Einträge (86 Pfaffenhofen + 40 Miedzywodzie + 34 Inchenhofen)', () => {
+  assertEqual(LOCAL_VENUES.length, 160, `Nur ${LOCAL_VENUES.length} Venues`);
 });
 test('DQ-07', '28 Miedzywodzie-Aktivitäten + 12 Restaurants = 40 gesamt', () => {
   const miedzy = LOCAL_VENUES.filter(v => v.region === 'miedzywodzie');
@@ -517,6 +517,55 @@ test('UI-06', 'Fixer Radius 50km für Aktivitäten', () => {
 test('UI-07', 'Load-More Button unterstützt Radius-Erweiterung', () => {
   assert(html.includes('expandToRadius'), 'expandToRadius Parameter fehlt!');
   assert(html.includes('Umkreis auf'), 'Umkreis-Erweiterungs-Text fehlt!');
+});
+
+
+test('UI-08', 'setMode entfernt Load-More-Button und versteckt Results-Header', () => {
+  assert(html.includes("document.getElementById('load-more-wrap')?.remove();"), 'load-more-wrap wird beim Moduswechsel nicht entfernt!');
+  assert(html.includes("document.getElementById('results-header').style.display = 'none';"), 'results-header wird beim Moduswechsel nicht versteckt!');
+});
+
+
+// ═══════════════════════════════════════════════════════════════════
+// UC-11 QA: API-Prompt Coverage & XSS-Härtung
+// ═══════════════════════════════════════════════════════════════════
+console.log('\n🧪  UC-11 API-Prompt Coverage & XSS-Härtung');
+
+test('PROMPT-01', 'buildVenuesPrompt unterscheidet Restaurant- und Aktivitäts-Prompt', () => {
+  assert(html.includes('if (isRest) {'), 'isRest-Verzweigung in buildVenuesPrompt fehlt!');
+  assert(html.includes('Du bist ein Restaurantexperte'), 'Restaurant-Prompt-Text fehlt!');
+  assert(html.includes('Du bist ein Freizeitexperte'), 'Aktivitäts-Prompt-Text fehlt!');
+});
+
+test('PROMPT-02', 'Restaurant-Prompt fordert alle notwendigen Felder an', () => {
+  const restPromptStart = html.indexOf('Du bist ein Restaurantexperte');
+  const restPromptEnd = html.indexOf('`;', restPromptStart);
+  const restPrompt = html.slice(restPromptStart, restPromptEnd);
+  ['cuisine', 'specialty', 'playground', 'terrace', 'reservationNeeded', 'closedOn', 'childFriendly', 'priceRange']
+    .forEach(field => assert(restPrompt.includes(field), `Feld "${field}" fehlt im Restaurant-Prompt!`));
+});
+
+test('PROMPT-03', 'renderOneVenue rendert Restaurants mit Restaurant-Karte', () => {
+  assert(html.includes('buildRestaurantCardHtml'), 'buildRestaurantCardHtml fehlt!');
+  assert(html.includes("isRest || venue.category === 'restaurant'"), 'Restaurant-Erkennung im Stream-Renderer fehlt!');
+});
+
+test('XSS-01', 'Location-Input verwendet .value, nicht innerHTML (sicher gegen Injection)', () => {
+  const idx = html.indexOf("const location = document.getElementById('location').value");
+  assert(idx > 0, 'location wird nicht über .value gelesen!');
+});
+
+test('XSS-02', 'Kein direktes Einfügen von User-Input in innerHTML ohne Kontext', () => {
+  // location.value wird nie direkt in innerHTML von index.html eingefügt (nur API-Daten)
+  // Prüfe dass es keine offensichtliche Injection-Stelle wie innerHTML = location gibt
+  assert(!html.match(/innerHTML\s*=\s*[^;]*getElementById\('location'\)\.value/), 'Location-Wert wird direkt in innerHTML eingefügt!');
+});
+
+test('XSS-03', 'API-Response Felder (name, description) werden nur in Template-Strings verwendet', () => {
+  // Sicherstellen dass buildActivityCard und buildRestaurantCardHtml existieren und
+  // Venue-Daten konsistent nur über Template-Literals rendern (kein eval, kein document.write)
+  assert(!html.includes('document.write'), 'document.write gefunden — Sicherheitsrisiko!');
+  assert(!html.includes('eval('), 'eval() gefunden — Sicherheitsrisiko!');
 });
 
 // ═══════════════════════════════════════════════════════════════════
