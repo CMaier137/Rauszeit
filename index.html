@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0060)file:///C:/Users/maierchristia/Downloads/trip-finder_51.html -->
-<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="de">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rauszeit</title>
 <meta name="theme-color" content="#c45c2a">
@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="rauszeit.">
 <meta name="description" content="Dein persönlicher Ausflug- und Restaurant-Finder für Tagesausflüge und Wochenenden.">
-<link rel="manifest" href="file:///C:/Users/maierchristia/Downloads/manifest.json">
-<link rel="apple-touch-icon" href="file:///C:/Users/maierchristia/Downloads/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="./index_files/css2" rel="stylesheet" media="all" onload="this.media=&#39;all&#39;">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"></noscript>
 <style>
   :root {
@@ -439,14 +439,14 @@
 <body>
 <div id="progress-bar"></div>
 
-<div id="api-banner" style="display: none;">
+<div id="api-banner">
   <div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
     <div>
       <p style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:4px;">👋 Willkommen bei rauszeit.</p>
       <p style="font-size:13px;color:var(--ink-2);">Gib das Passwort ein.</p>
     </div>
     <div class="key-row">
-      <input type="password" id="api-key-input" placeholder="Passwort eingeben…" autocomplete="off">
+      <input type="password" id="api-key-input" placeholder="Passwort eingeben…" autocomplete="off"/>
       <button class="btn-save-key" onclick="saveKey()">Los geht's →</button>
     </div>
     <span id="key-feedback" style="display:none;font-size:13px;font-weight:500;"></span>
@@ -456,12 +456,12 @@
 <nav>
   <div class="logo">raus<span>zeit.</span></div>
   <div class="nav-right">
-    <span class="nav-tagline">Ausflüge &amp; Restaurants. Immer einen Plan.</span>
+    <span class="nav-tagline">Ausflüge & Restaurants. Immer einen Plan.</span>
     <button class="fav-nav-btn" onclick="toggleFavPanel()">
-      ❤️ Favoriten <span class="fav-count" id="fav-count" style="display: none;">0</span>
+      ❤️ Favoriten <span class="fav-count" id="fav-count">0</span>
     </button>
     <button class="visited-nav-btn" onclick="toggleVisitedPanel()">
-      ✓ Besucht <span class="visited-count" id="visited-count" style="display: none;">0</span>
+      ✓ Besucht <span class="visited-count" id="visited-count">0</span>
     </button>
   </div>
 </nav>
@@ -472,45 +472,45 @@
     <div class="search-form">
       <!-- Mode toggle -->
       <div class="mode-toggle" id="mode-toggle">
-        <button class="mode-btn active act-mode" id="mode-act" onclick="setMode(&#39;activities&#39;)">🎯 Erleben</button>
-        <button class="mode-btn" id="mode-rest" onclick="setMode(&#39;restaurants&#39;)">🍽️ Essen</button>
+        <button class="mode-btn active act-mode" id="mode-act" onclick="setMode('activities')">🎯 Erleben</button>
+        <button class="mode-btn" id="mode-rest" onclick="setMode('restaurants')">🍽️ Essen</button>
       </div>
 
       <!-- Common fields -->
       <div class="field">
         <label for="location">Standort</label>
         <div class="autocomplete-wrap">
-          <input type="text" id="location" placeholder="z.B. Pfaffenhofen, Miedzywodzie…" value="Pfaffenhofen an der Ilm, Deutschland" autocomplete="off" oninput="onLocationInput(this.value)" onblur="setTimeout(closeAutocomplete,150)">
+          <input type="text" id="location" placeholder="z.B. Pfaffenhofen, Miedzywodzie…" value="Pfaffenhofen an der Ilm, Deutschland" autocomplete="off" oninput="onLocationInput(this.value)" onblur="setTimeout(closeAutocomplete,150)"/>
           <div class="autocomplete-list" id="autocomplete-list" style="display:none"></div>
         </div>
       </div>
       <div class="fields-row" style="margin-bottom:0">
         <div class="field">
           <label for="trip-date">Datum</label>
-          <input type="date" id="trip-date" min="2026-07-27">
+          <input type="date" id="trip-date"/>
         </div>
         <div class="field" id="act-type-field">
           <label for="act-type">Erlebnistyp</label>
           <select id="act-type">
-            <option value="any" selected="">Alle Typen</option>
-            <option value="adventure">Abenteuer &amp; Outdoor</option>
-            <option value="animals">Zoos &amp; Tiere</option>
-            <option value="water">Wasserparks &amp; Seen</option>
-            <option value="culture">Kultur &amp; Geschichte</option>
+            <option value="any" selected>Alle Typen</option>
+            <option value="adventure">Abenteuer & Outdoor</option>
+            <option value="animals">Zoos & Tiere</option>
+            <option value="water">Wasserparks & Seen</option>
+            <option value="culture">Kultur & Geschichte</option>
             <option value="museum">Museum</option>
             <option value="theme">Freizeitparks</option>
-            <option value="nature">Natur &amp; Wandern</option>
+            <option value="nature">Natur & Wandern</option>
           </select>
         </div>
         <div class="field" id="rest-cuisine-inline" style="display:none">
           <label for="rest-cuisine">Küche</label>
-          <select id="rest-cuisine">
+          <select id="rest-cuisine" >
             <option value="any">Alle Küchen</option>
             <option value="polish">Polnisch</option>
             <option value="italian">Italienisch</option>
             <option value="fish">Fisch</option>
             <option value="cafe">Café</option>
-            <option value="snacks">Snacks &amp; Grill</option>
+            <option value="snacks">Snacks & Grill</option>
             <option value="icecream">Eis</option>
             <option value="asian">Asiatisch</option>
             <option value="german">Bayerisch</option>
@@ -520,10 +520,10 @@
       </div>
 
       <!-- Activity filters -->
-      <div id="filters-activities" style="flex-direction: column; gap: 10px;">
+      <div id="filters-activities" style="display:flex;flex-direction:column;gap:10px;">
         <div class="toggle-pills" id="act-toggles" style="margin-top:2px;">
-          <button class="toggle-pill on" id="pill-outdoor" onclick="togglePill(&#39;pill-outdoor&#39;)">☀️ Outdoor</button>
-          <button class="toggle-pill" id="pill-indoor" onclick="togglePill(&#39;pill-indoor&#39;)">🏠 Indoor</button>
+          <button class="toggle-pill" id="pill-outdoor" onclick="togglePill('pill-outdoor')">☀️ Outdoor</button>
+          <button class="toggle-pill" id="pill-indoor" onclick="togglePill('pill-indoor')">🏠 Indoor</button>
         </div>
       </div>
 
@@ -531,8 +531,8 @@
 
       <!-- Restaurant extra toggles -->
       <div class="toggle-pills" id="rest-toggles" style="display:none">
-        <button class="toggle-pill" id="pill-terrace" onclick="togglePill(&#39;pill-terrace&#39;)">☀️ Terrasse</button>
-        <button class="toggle-pill" id="pill-playground" onclick="togglePill(&#39;pill-playground&#39;)">🛝 Spielplatz</button>
+        <button class="toggle-pill" id="pill-terrace" onclick="togglePill('pill-terrace')">☀️ Terrasse</button>
+        <button class="toggle-pill" id="pill-playground" onclick="togglePill('pill-playground')">🛝 Spielplatz</button>
       </div>
 
       <div class="search-btn-row">
@@ -544,7 +544,7 @@
     <div class="spot-search-wrap">
       <p class="spot-search-label">Oder direkt nach einem Ort suchen</p>
       <div class="spot-search-row">
-        <input type="text" id="spot-input" class="spot-input" placeholder="z.B. Therme Erding, Legoland Günzburg, Kletterpark Jetzendorf…">
+        <input type="text" id="spot-input" class="spot-input" placeholder="z.B. Therme Erding, Legoland Günzburg, Kletterpark Jetzendorf…"/>
         <button class="btn-spot" onclick="searchSpot()" id="spot-btn">Nachschlagen</button>
       </div>
     </div>
@@ -557,7 +557,7 @@
       <h3>❤️ Meine Favoriten</h3>
       <button class="btn-close" onclick="toggleFavPanel()">✕</button>
     </div>
-    <div class="fav-list" id="fav-list"><p class="fav-empty">Noch keine Favoriten gespeichert. Klicke auf 🤍 bei einer Aktivität.</p></div>
+    <div class="fav-list" id="fav-list"></div>
   </div>
 
   <div id="visited-panel" style="display:none;background:var(--white);border:1.5px solid var(--paper-3);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;">
@@ -565,7 +565,7 @@
       <h3>✓ Bereits besucht</h3>
       <button class="btn-close" onclick="toggleVisitedPanel()">✕</button>
     </div>
-    <div class="fav-list" id="visited-list"><p class="fav-empty">Noch keine besuchten Orte. Im Detail-Panel auf "Als besucht markieren" klicken.</p></div>
+    <div class="fav-list" id="visited-list"></div>
   </div>
 
   <div id="spot-result"></div>
@@ -575,7 +575,12 @@
     <h2 id="results-title"></h2>
     <p id="results-meta"></p>
   </div>
-  <div class="activity-grid" id="activity-grid"><div class="state-empty"><div class="big-icon">🗺️</div><p>Wo startest du?<br>Gib deinen Ort ein und entdecke was in der Nähe auf dich wartet.</p></div></div>
+  <div class="activity-grid" id="activity-grid">
+    <div class="state-empty">
+      <div class="big-icon">🗺️</div>
+      <p>Wo startest du?<br>Gib deinen Ort ein und entdecke was in der Nähe auf dich wartet.</p>
+    </div>
+  </div>
 </main>
 
 <footer>
@@ -4921,12 +4926,14 @@ async function loadMoreActivities(expandToRadius) {
   const maxKm = expandToRadius || lastSearchParams.maxKm;
   const btn = document.getElementById('load-more-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Wird geladen…'; }
+  appendSkeletons(3); // 3 Skeletons reichen als Ladehinweis beim Nachladen
 
   // Use local DB if available
   if (isNearPfaffenhofen(location)) {
     const excludeNames = activities.map(a => a.name);
     const moreLocal = loadMoreLocalDB(maxKm, actType, envType, type, excludeNames);
     if (moreLocal.length > 0) {
+      removeLoadMoreSkeletons();
       const wrap = document.getElementById('load-more-wrap');
       if (wrap) wrap.remove();
       const grid = document.getElementById('activity-grid');
@@ -4979,7 +4986,8 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
     const data = await res.json();
     const newVenues = robustParse(data.content.map(b=>b.text||'').join(''));
 
-    // Remove load-more wrapper, append new cards
+    // Remove load-more wrapper and skeletons, append new cards
+    removeLoadMoreSkeletons();
     const wrap = document.getElementById('load-more-wrap');
     if (wrap) wrap.remove();
 
@@ -5039,6 +5047,7 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
     }
 
   } catch(e) {
+    removeLoadMoreSkeletons();
     showError(e.message||'Fehler beim Laden weiterer Aktivitäten.');
     if (btn) { btn.disabled = false; btn.textContent = '+ Weitere Aktivitäten laden'; }
   }
@@ -5575,6 +5584,33 @@ function showSkeletons(n=9) {
     </div>`).join('');
 }
 
+// Hängt n Skeleton-Cards ans Ende des Grids an (für "Mehr laden" ohne bestehende Karten zu löschen)
+function appendSkeletons(n=9) {
+  const grid = document.getElementById('activity-grid');
+  const wrap = document.getElementById('load-more-wrap');
+  const skeletonHtml = Array(n).fill(0).map(()=>`
+    <div class="skeleton-card load-more-skeleton">
+      <div class="skel skel-thumb"></div>
+      <div class="skel-body">
+        <div class="skel skel-line w60" style="margin-bottom:6px"></div>
+        <div class="skel skel-line w40" style="margin-bottom:14px"></div>
+        <div class="skel skel-line w90" style="margin-bottom:6px"></div>
+        <div class="skel skel-line w80" style="margin-bottom:18px"></div>
+        <div class="skel skel-line w60"></div>
+      </div>
+    </div>`).join('');
+  if (wrap) {
+    wrap.insertAdjacentHTML('beforebegin', skeletonHtml);
+  } else {
+    grid.insertAdjacentHTML('beforeend', skeletonHtml);
+  }
+}
+
+// Entfernt alle "Mehr laden"-Skeletons
+function removeLoadMoreSkeletons() {
+  document.querySelectorAll('.load-more-skeleton').forEach(s => s.remove());
+}
+
 // ── Rating benchmark helper ───────────────────────────────────────
 function ratingBench(rating) {
   if (rating >= 4.5) return `<span class="rating-bench bench-great">Top bewertet</span>`;
@@ -5918,7 +5954,9 @@ async function streamAndRenderVenues(venuesRes, p, statusInterval) {
   const contentType = venuesRes.headers.get('Content-Type') || '';
   if (contentType.includes('application/json')) {
     const venuesData = await venuesRes.json();
-    robustParse(venuesData.content.map(b=>b.text||'').join('')).forEach(renderOneVenue);
+    const parsed = robustParse(venuesData.content.map(b=>b.text||'').join(''));
+    parsed.sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
+    parsed.forEach(renderOneVenue);
     grid.querySelectorAll('.skeleton-card').forEach(s => s.remove());
     return rendered;
   }
@@ -5926,7 +5964,9 @@ async function streamAndRenderVenues(venuesRes, p, statusInterval) {
   // Fallback: kein Streaming möglich (file:// oder ältere Browser)
   if (!venuesRes.body?.getReader) {
     const venuesData = await venuesRes.json();
-    robustParse(venuesData.content.map(b=>b.text||'').join('')).forEach(renderOneVenue);
+    const parsed = robustParse(venuesData.content.map(b=>b.text||'').join(''));
+    parsed.sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
+    parsed.forEach(renderOneVenue);
     return rendered;
   }
 
@@ -6057,9 +6097,6 @@ async function findActivities() {
     setProgress(30);
 
     const rendered = await streamAndRenderVenues(venuesRes, p, statusInterval);
-
-    // Sort by distance
-    activities.sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
 
     if (!activities.length) {
       document.getElementById('activity-grid').innerHTML =
@@ -6271,6 +6308,5 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-
-
-</body></html>
+</body>
+</html>

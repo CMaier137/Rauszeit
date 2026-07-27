@@ -568,6 +568,60 @@ test('XSS-03', 'API-Response Felder (name, description) werden nur in Template-S
   assert(!html.includes('eval('), 'eval() gefunden — Sicherheitsrisiko!');
 });
 
+
+// ═══════════════════════════════════════════════════════════════════
+// UC-12 QA: Sortierung & Load-More Skeletons
+// ═══════════════════════════════════════════════════════════════════
+console.log('\n📐  UC-12 Sortierung & Load-More Skeletons');
+
+test('SORT-01', 'API-Ergebnisse werden VOR dem Rendern sortiert (nicht danach)', () => {
+  // Sortierung muss im JSON-Response-Handling passieren, bevor forEach(renderOneVenue)
+  const jsonBlockStart = html.indexOf("if (contentType.includes('application/json')) {");
+  const jsonBlockEnd = html.indexOf('}', html.indexOf('grid.querySelectorAll', jsonBlockStart));
+  const jsonBlock = html.slice(jsonBlockStart, jsonBlockEnd);
+  assert(jsonBlock.includes('parsed.sort('), 'Sortierung fehlt im JSON-Response-Block!');
+  const sortIdx = jsonBlock.indexOf('parsed.sort(');
+  const forEachIdx = jsonBlock.indexOf('parsed.forEach(renderOneVenue)');
+  assert(sortIdx > 0 && forEachIdx > 0 && sortIdx < forEachIdx, 'sort() muss VOR forEach(renderOneVenue) stehen!');
+});
+
+test('SORT-02', 'Keine wirkungslose Sortierung nach dem Rendern mehr vorhanden', () => {
+  // Der alte Bug: activities.sort() direkt nach streamAndRenderVenues() hatte keinen Effekt
+  assert(!html.includes('const rendered = await streamAndRenderVenues(venuesRes, p, statusInterval);\n\n    // Sort by distance'),
+    'Alte wirkungslose Sortierung nach dem Rendern ist noch vorhanden!');
+});
+
+test('SORT-03', 'searchLocalDB sortiert Ergebnisse nach distanceKm', () => {
+  assert(html.includes('results.sort((a, b) => a.distanceKm - b.distanceKm)'), 'Sortierung in searchLocalDB fehlt!');
+});
+
+test('SKEL-01', 'appendSkeletons und removeLoadMoreSkeletons Funktionen vorhanden', () => {
+  assert(html.includes('function appendSkeletons'), 'appendSkeletons fehlt!');
+  assert(html.includes('function removeLoadMoreSkeletons'), 'removeLoadMoreSkeletons fehlt!');
+});
+
+test('SKEL-02', 'loadMoreActivities zeigt Skeletons vor dem API-Call', () => {
+  const lmaStart = html.indexOf('async function loadMoreActivities(expandToRadius)');
+  const lmaSection = html.slice(lmaStart, lmaStart + 500);
+  assert(lmaSection.includes('appendSkeletons('), 'appendSkeletons wird nicht in loadMoreActivities aufgerufen!');
+});
+
+test('SKEL-03', 'Skeletons werden nach Laden entfernt (lokal UND API-Pfad)', () => {
+  const lmaStart = html.indexOf('async function loadMoreActivities(expandToRadius)');
+  const lmaEnd = html.indexOf('\nfunction appendLoadMoreBtn', lmaStart);
+  const lmaSection = html.slice(lmaStart, lmaEnd);
+  const removeCalls = (lmaSection.match(/removeLoadMoreSkeletons\(\)/g) || []).length;
+  assert(removeCalls >= 2, `Erwartet mind. 2 removeLoadMoreSkeletons() Aufrufe (lokal + API), gefunden: ${removeCalls}`);
+});
+
+test('SKEL-04', 'Skeletons werden auch bei Fehler entfernt (kein Hängenbleiben)', () => {
+  const lmaStart = html.indexOf('async function loadMoreActivities(expandToRadius)');
+  const catchStart = html.indexOf('} catch(e) {', lmaStart);
+  const catchEnd = html.indexOf('}', html.indexOf('showError', catchStart));
+  const catchBlock = html.slice(catchStart, catchEnd + 1);
+  assert(catchBlock.includes('removeLoadMoreSkeletons()'), 'catch-Block entfernt Skeletons nicht — sie könnten hängen bleiben!');
+});
+
 // ═══════════════════════════════════════════════════════════════════
 // ZUSAMMENFASSUNG
 // ═══════════════════════════════════════════════════════════════════
