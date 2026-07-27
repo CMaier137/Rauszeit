@@ -600,10 +600,11 @@ test('SKEL-01', 'appendSkeletons und removeLoadMoreSkeletons Funktionen vorhande
   assert(html.includes('function removeLoadMoreSkeletons'), 'removeLoadMoreSkeletons fehlt!');
 });
 
-test('SKEL-02', 'loadMoreActivities zeigt Skeletons vor dem API-Call', () => {
+test('SKEL-02', 'loadMoreActivities zeigt 9 Skeletons vor dem API-Call (passend zur erwarteten Ergebnisanzahl)', () => {
   const lmaStart = html.indexOf('async function loadMoreActivities(expandToRadius)');
   const lmaSection = html.slice(lmaStart, lmaStart + 500);
   assert(lmaSection.includes('appendSkeletons('), 'appendSkeletons wird nicht in loadMoreActivities aufgerufen!');
+  assert(lmaSection.includes('appendSkeletons(9)'), `Skeleton-Anzahl sollte 9 sein (API liefert bis zu 9 Venues), gefunden: ${lmaSection.match(/appendSkeletons\(\d+\)/)}`);
 });
 
 test('SKEL-03', 'Skeletons werden nach Laden entfernt (lokal UND API-Pfad)', () => {

@@ -4926,7 +4926,7 @@ async function loadMoreActivities(expandToRadius) {
   const maxKm = expandToRadius || lastSearchParams.maxKm;
   const btn = document.getElementById('load-more-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Wird geladen…'; }
-  appendSkeletons(3); // 3 Skeletons reichen als Ladehinweis beim Nachladen
+  appendSkeletons(9); // 9 Skeletons — genauso viele wie erwartete neue Venues
 
   // Use local DB if available
   if (isNearPfaffenhofen(location)) {
