@@ -657,6 +657,29 @@ test('UI-12', 'Kein redundanter "Wo startest du" Leerzustand mehr — Grid start
   assert(!html.includes('Wo startest du?<br>Gib deinen Ort ein'), 'Alter "Wo startest du" Text ist noch im Code vorhanden!');
 });
 
+
+test('QUAL-01', 'Suche verwendet Sonnet statt Haiku (bessere Faktentreue)', () => {
+  const matches = html.match(/claude-sonnet-4-6/g) || [];
+  assert(matches.length >= 3, `Erwartet mind. 3 Sonnet-Aufrufe (findActivities, loadMore, searchSpot), gefunden: ${matches.length}`);
+});
+
+test('QUAL-02', 'Prompts enthalten explizite Anti-Halluzinations-Instruktion', () => {
+  assert(html.includes('KRITISCH WICHTIG: Erfinde NIEMALS'), 'Anti-Halluzinations-Warnung fehlt im Prompt!');
+  assert(html.includes('lass es WEG') || html.includes('lass ihn WEG'), 'Erlaubnis weniger Ergebnisse zu liefern fehlt!');
+});
+
+test('QUAL-03', 'Prompt fordert "bis zu 9" statt starr "exakt 9" (erlaubt weniger bei Unsicherheit)', () => {
+  assert(html.includes('Nenne bis zu 9'), 'Prompt fordert weiterhin starr exakt 9 Ergebnisse!');
+  assert(!html.includes('Nenne exakt 9 real existierende'), 'Alte starre "exakt 9" Formulierung noch vorhanden!');
+});
+
+
+test('QUAL-04', 'Prompt verbietet generische Pseudo-Venue-Namen (Ort+Aktivität-Muster)', () => {
+  assert(html.includes('VERBOTEN sind Pseudo-Venues'), 'Verbot generischer Pseudo-Venues fehlt im Prompt!');
+  assert(html.includes('Mountainbiking'), 'Konkretes Negativ-Beispiel für Pseudo-Venue fehlt!');
+  assert(html.includes('eigenständig benannte Institutionen'), 'Positive Anleitung für echte Venue-Namen fehlt!');
+});
+
 // ═══════════════════════════════════════════════════════════════════
 // ZUSAMMENFASSUNG
 // ═══════════════════════════════════════════════════════════════════

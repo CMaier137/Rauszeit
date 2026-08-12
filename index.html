@@ -4740,7 +4740,7 @@ Antworte NUR mit einem JSON-Objekt, kein Markdown, keine Erklärung:
     const res = await fetch(WORKER_URL, {
       method:"POST",
       headers:{"Content-Type":"application/json","X-App-Password":apiKey},
-      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1200,messages:[{role:"user",content:prompt}]})
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1200,messages:[{role:"user",content:prompt}]})
     });
     if (!res.ok) throw new Error(`API Fehler ${res.status}`);
     const data = await res.json();
@@ -4982,7 +4982,7 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
     const res = await fetch(WORKER_URL, {
       method:"POST",
       headers:{"Content-Type":"application/json","X-App-Password":apiKey},
-      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:4096,messages:[{role:"user",content:prompt}]})
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4096,messages:[{role:"user",content:prompt}]})
     });
     if (!res.ok) throw new Error(`API Fehler ${res.status}`);
     const data = await res.json();
@@ -5907,8 +5907,10 @@ function buildVenuesPrompt(p) {
   if (isRest) {
     const cuisineDesc = restCuisine && restCuisine !== 'any' ? `Küche: ${restCuisine}.` : 'Alle Küchen.';
     return `Du bist ein Restaurantexperte für Deutschland und Österreich.
-Nenne exakt 9 real existierende Restaurants in maximal ${maxKm} km von "${location}".
-${cuisineDesc} Nur ECHTE, bekannte Restaurants. Gute Mischung verschiedener Küchen und Preislagen.
+Nenne bis zu 9 real existierende, tatsächlich geöffnete Restaurants in maximal ${maxKm} km von "${location}".
+${cuisineDesc} Nur ECHTE, dir zweifelsfrei bekannte Restaurants. Gute Mischung verschiedener Küchen und Preislagen.
+
+KRITISCH WICHTIG: Erfinde NIEMALS Restaurantnamen. Wenn du dir bei einem Restaurant nicht zu 100% sicher bist ob es wirklich existiert, lass es WEG. Es ist besser, nur 4-5 sichere Restaurants zu nennen als 9 mit unsicheren dabei. Nenne ausschließlich Restaurants, die du mit hoher Sicherheit als real existierend kennst.
 Antworte NUR mit einem JSON-Array, kein Markdown, keine Erklärung.
 
 Jedes Objekt:
@@ -5918,10 +5920,13 @@ Jedes Objekt:
   const actDesc = actType==='any'?'gemischte Auswahl (Abenteuer, Natur, Kultur, Tiere, Wasser, Museen, Freizeitparks)':actType;
   const envDesc = envType==='indoor'?'nur Indoor-Aktivitäten':envType==='outdoor'?'nur Outdoor-Aktivitäten':'Indoor und Outdoor';
   return `Du bist ein Freizeitexperte für Deutschland und Österreich.
-Nenne exakt 9 real existierende Freizeitaktivitäten und Ausflugsziele in maximal ${maxKm} km Fahrtstrecke von "${location}" (Deutschland).
+Nenne bis zu 9 real existierende Freizeitaktivitäten und Ausflugsziele in maximal ${maxKm} km Fahrtstrecke von "${location}" (Deutschland).
 Aktivitätstyp: ${actDesc}. ${envDesc}.
 
-WICHTIG: Nur ECHTE, NAMENTLICH bekannte Orte. Maximale Fahrtstrecke ${maxKm} km – strikt einhalten. Gute Mischung.
+KRITISCH WICHTIG: Erfinde NIEMALS Venue-Namen, auch nicht ähnlich klingende Varianten bekannter Orte. Wenn du dir bei einem Ort nicht zu 100% sicher bist ob er wirklich existiert und wirklich in der Nähe liegt, lass ihn WEG. Es ist besser, nur 4-5 sichere Venues zu nennen als 9 mit unsicheren oder erfundenen dabei. Bevorzuge landesweit bekannte, gut dokumentierte Ausflugsziele gegenüber obskuren Geheimtipps, bei denen ein Risiko besteht dass sie nicht existieren.
+
+VERBOTEN sind Pseudo-Venues, die nur "Ort + generische Aktivität" kombinieren, ohne dass es sich um einen konkreten, benannten, buchbaren Anbieter handelt — Beispiele für VERBOTENE Muster: "[Ort] Mountainbiking", "[Ort] Eisklettern", "[Ort] Kayak und Rafting", "[Ort] Wandern". Nenne stattdessen NUR echte, eigenständig benannte Institutionen, Betriebe oder Sehenswürdigkeiten (z.B. einen konkreten Bootsverleih mit Eigennamen, einen konkreten Freizeitpark mit Eigennamen, ein konkretes Museum). Wenn dir für eine Aktivitätskategorie kein konkret benannter, real existierender Anbieter bekannt ist, lass diese Kategorie komplett weg statt sie generisch zu benennen.
+Maximale Fahrtstrecke ${maxKm} km – strikt einhalten. Gute Mischung.
 Antworte NUR mit einem JSON-Array, kein Markdown, keine Erklärung.
 
 Jedes Objekt:
@@ -6087,7 +6092,7 @@ async function findActivities() {
     const venuesRes = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type":"application/json", "X-App-Password": apiKey },
-      body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:4096, stream:true, messages:[{ role:"user", content:buildVenuesPrompt(p) }] })
+      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:4096, stream:true, messages:[{ role:"user", content:buildVenuesPrompt(p) }] })
     });
 
     if (!venuesRes.ok) {
