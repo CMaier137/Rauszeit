@@ -389,8 +389,16 @@ test('DQ-05', 'Alle googleRatings zwischen 3.5 und 5.0', () => {
   LOCAL_VENUES.filter(v => v.googleRating).forEach(v =>
     assert(v.googleRating >= 3.5 && v.googleRating <= 5.0, `${v.name}: ${v.googleRating}`));
 });
-test('DQ-06', 'Gesamtzahl DB: 160 Einträge (86 Pfaffenhofen + 40 Miedzywodzie + 34 Inchenhofen)', () => {
-  assertEqual(LOCAL_VENUES.length, 160, `Nur ${LOCAL_VENUES.length} Venues`);
+test('DQ-06', 'Gesamtzahl DB: 183 Einträge (86 Pfaffenhofen + 40 Miedzywodzie + 34 Inchenhofen + 23 Berchtesgaden)', () => {
+  assertEqual(LOCAL_VENUES.length, 183, `Nur ${LOCAL_VENUES.length} Venues`);
+});
+test('DQ-06B', '23 Berchtesgaden-Venues vorhanden', () => {
+  const bgd = LOCAL_VENUES.filter(v => v.region === 'berchtesgaden');
+  assertEqual(bgd.length, 23, `${bgd.length} Berchtesgaden-Venues statt 23`);
+});
+test('DQ-06C', 'Berchtesgaden in KNOWN_LOCATIONS', () => {
+  assert(html.includes("'berchtesgaden'"), 'berchtesgaden fehlt in KNOWN_LOCATIONS');
+  assert(html.includes("'83471'"), 'PLZ 83471 fehlt in KNOWN_LOCATIONS');
 });
 test('DQ-07', '28 Miedzywodzie-Aktivitäten + 12 Restaurants = 40 gesamt', () => {
   const miedzy = LOCAL_VENUES.filter(v => v.region === 'miedzywodzie');
