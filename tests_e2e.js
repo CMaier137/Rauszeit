@@ -656,7 +656,7 @@ test('UI-10', 'Öffnen/Schließen der Detailansicht steuert Backdrop und Body-Sc
 });
 
 test('UI-11', 'Escape-Taste schließt die Detailansicht', () => {
-  assert(html.includes("e.key==='Escape') closeDetail()"), 'Escape-Handler für closeDetail fehlt!');
+  assert(html.includes("e.key==='Escape'") && html.includes('closeDetail()'), 'Escape-Handler für closeDetail fehlt!');
 });
 
 
@@ -686,6 +686,152 @@ test('QUAL-04', 'Prompt verbietet generische Pseudo-Venue-Namen (Ort+Aktivität-
   assert(html.includes('VERBOTEN sind Pseudo-Venues'), 'Verbot generischer Pseudo-Venues fehlt im Prompt!');
   assert(html.includes('Mountainbiking'), 'Konkretes Negativ-Beispiel für Pseudo-Venue fehlt!');
   assert(html.includes('eigenständig benannte Institutionen'), 'Positive Anleitung für echte Venue-Namen fehlt!');
+});
+
+
+// ═══════════════════════════════════════════════════════════════════
+// UC-13 Tagesplan (Mein Tag)
+// ═══════════════════════════════════════════════════════════════════
+console.log('\n📅  UC-13 Tagesplan (Mein Tag)');
+
+test('DAY-01', 'Tagesplan-State-Funktionen vorhanden (get/save/isIn)', () => {
+  assert(html.includes('function getDayPlan()'), 'getDayPlan fehlt!');
+  assert(html.includes('function saveDayPlan('), 'saveDayPlan fehlt!');
+  assert(html.includes('function isInDayPlan('), 'isInDayPlan fehlt!');
+  assert(html.includes("const DAYPLAN_STORE = 'wf_dayplan_v1'"), 'DAYPLAN_STORE Key fehlt!');
+});
+
+test('DAY-02', 'toggleDayPlan fügt hinzu/entfernt und speichert relevante Felder', () => {
+  assert(html.includes('function toggleDayPlan(idx)'), 'toggleDayPlan fehlt!');
+  const start = html.indexOf('function toggleDayPlan(idx)');
+  const section = html.slice(start, start + 700);
+  ['name', 'distanceKm', 'durationHours', 'openingHours', 'lat', 'lon'].forEach(field =>
+    assert(section.includes(field), `Feld "${field}" wird beim Hinzufügen nicht gespeichert!`));
+});
+
+test('DAY-03', 'Tagesplan-Overlay nutzt dasselbe Fullscreen-Muster wie Detailansicht', () => {
+  assert(html.includes('.dayplan-panel{'), 'dayplan-panel CSS fehlt!');
+  assert(html.includes('id="dayplan-backdrop"'), 'dayplan-backdrop Element fehlt!');
+  assert(html.includes('position:fixed;inset:0'), 'Fullscreen-Overlay-Positionierung fehlt!');
+});
+
+test('DAY-04', 'Floating-Button (FAB) zeigt Anzahl und ist standardmäßig versteckt', () => {
+  assert(html.includes('id="dayplan-fab"'), 'dayplan-fab Element fehlt!');
+  assert(html.includes('.dayplan-fab{') && html.includes('display:none'), 'FAB ist nicht standardmäßig versteckt!');
+  assert(html.includes('function updateDayPlanFab()'), 'updateDayPlanFab Funktion fehlt!');
+});
+
+test('DAY-05', 'Umsortieren (moveDayPlanItem) und Entfernen (removeDayPlanItem) vorhanden', () => {
+  assert(html.includes('function moveDayPlanItem('), 'moveDayPlanItem fehlt!');
+  assert(html.includes('function removeDayPlanItem('), 'removeDayPlanItem fehlt!');
+});
+
+test('DAY-06', 'KI-Machbarkeits-Check ruft Worker mit strukturiertem Prompt auf', () => {
+  assert(html.includes('function loadDayPlanCheck('), 'loadDayPlanCheck fehlt!');
+  const start = html.indexOf('async function loadDayPlanCheck');
+  const section = html.slice(start, start + 1500);
+  assert(section.includes('status'), 'status-Feld im Prompt fehlt!');
+  assert(section.includes('"good|tight|bad"'), 'Status-Optionen fehlen im Prompt!');
+  assert(section.includes('WORKER_URL'), 'Check nutzt nicht den Worker!');
+});
+
+test('DAY-07', 'KI-Check wird nur ab 2 Venues ausgelöst', () => {
+  assert(html.includes('plan.length >= 2'), 'Mindestanzahl-Bedingung für KI-Check fehlt!');
+});
+
+test('DAY-08', 'KI-Check hat robusten Fehler-Fallback (kein Absturz bei API-Fehler)', () => {
+  const start = html.indexOf('async function loadDayPlanCheck');
+  const end = html.indexOf('function shareDayPlan');
+  const section = html.slice(start, end);
+  assert(section.includes('catch (e)'), 'Kein try/catch im KI-Check!');
+  assert(section.includes("checkEl.remove()"), 'Kein sauberer Fallback bei Fehler!');
+});
+
+test('DAY-09', 'Tag leeren (clearDayPlan) und Teilen (shareDayPlan) vorhanden', () => {
+  assert(html.includes('function clearDayPlan()'), 'clearDayPlan fehlt!');
+  assert(html.includes('function shareDayPlan()'), 'shareDayPlan fehlt!');
+});
+
+test('DAY-10', 'Escape-Taste schließt auch den Tagesplan', () => {
+  assert(html.includes('closeDayPlan()'), 'closeDayPlan Aufruf fehlt!');
+  const idx = html.indexOf("e.key==='Escape'");
+  const section = html.slice(idx, idx + 100);
+  assert(section.includes('closeDayPlan'), 'Escape-Handler schließt Tagesplan nicht!');
+});
+
+test('DAY-11', 'Detail-Button zum Hinzufügen zum Tagesplan vorhanden', () => {
+  assert(html.includes('id="detail-dayplan-btn"'), 'detail-dayplan-btn fehlt!');
+  assert(html.includes('onclick="toggleDayPlan(${idx})"'), 'toggleDayPlan Aufruf im Detail-Button fehlt!');
+});
+
+
+test('DAY-12', 'Favoriten- und Tagesplan-Buttons haben Hover-Tooltips (title-Attribut)', () => {
+  assert(html.includes("'Zu Favoriten hinzufügen'"), 'Tooltip fuer Favoriten hinzufuegen fehlt!');
+  assert(html.includes("'Von Favoriten entfernen'"), 'Tooltip fuer Favoriten entfernen fehlt!');
+  assert(html.includes("'Zum Tagesplan hinzufügen'"), 'Tooltip fuer Tagesplan hinzufuegen fehlt!');
+  assert(html.includes("'Vom Tagesplan entfernen'"), 'Tooltip fuer Tagesplan entfernen fehlt!');
+});
+
+test('DAY-13', 'Tooltips werden beim Umschalten live aktualisiert', () => {
+  const toggleFavStart = html.indexOf('function toggleFav(idx)');
+  const toggleFavSection = html.slice(toggleFavStart, toggleFavStart + 1000);
+  assert(toggleFavSection.includes('btn.title ='), 'toggleFav aktualisiert Tooltip nicht live!');
+  assert(toggleFavSection.includes('dbtn.title ='), 'toggleFav aktualisiert Detail-Tooltip nicht live!');
+
+  const toggleDayStart = html.indexOf('function toggleDayPlan(idx)');
+  const toggleDaySection = html.slice(toggleDayStart, toggleDayStart + 1100);
+  assert(toggleDaySection.includes('dbtn.title ='), 'toggleDayPlan aktualisiert Tooltip nicht live!');
+});
+
+
+test('DAY-14', 'Tagesplan-Button ist auch direkt auf der Aktivitäts-Karte vorhanden', () => {
+  const cardFnStart = html.indexOf('function buildActivityCard(a, i, date, location, type, actType, maxKm)');
+  const cardFnSection = html.slice(cardFnStart, cardFnStart + 1500);
+  assert(cardFnSection.includes('dayplan-btn'), 'dayplan-btn fehlt auf der Karte!');
+  assert(cardFnSection.includes("id=\"dayplan-btn-${i}\""), 'Karten-Button-ID fehlt!');
+  assert(cardFnSection.includes('toggleDayPlan(${i});event.stopPropagation();'), 'Karten-Button ruft toggleDayPlan nicht korrekt auf!');
+});
+
+test('DAY-15', 'toggleDayPlan aktualisiert auch den Karten-Button live', () => {
+  const start = html.indexOf('function toggleDayPlan(idx)');
+  const section = html.slice(start, start + 1100);
+  assert(section.includes('dayplan-btn-${idx}'), 'Karten-Button wird beim Umschalten nicht aktualisiert!');
+});
+
+
+test('DAY-16', 'Tagesplan-Button ist auf allen Restaurant-Karten-Templates vorhanden', () => {
+  const restCardStart = html.indexOf('function buildRestaurantCardHtml(r, idx)');
+  const restCardSection = html.slice(restCardStart, restCardStart + 1000);
+  assert(restCardSection.includes('dayplan-btn'), 'dayplan-btn fehlt in buildRestaurantCardHtml!');
+
+  const localGridStart = html.indexOf('function renderRestaurantGrid(rests, date, location, maxKm)');
+  const localGridSection = html.slice(localGridStart, localGridStart + 1500);
+  assert(localGridSection.includes('dayplan-btn'), 'dayplan-btn fehlt in renderRestaurantGrid!');
+
+  const loadMoreStart = html.indexOf("if (appMode === 'restaurants') {");
+  const loadMoreSection = html.slice(loadMoreStart, loadMoreStart + 1200);
+  assert(loadMoreSection.includes('dayplan-btn'), 'dayplan-btn fehlt im loadMoreLocal Restaurant-Zweig!');
+});
+
+test('DAY-17', 'Restaurant-Detailansicht hat Favoriten- und Tagesplan-Button', () => {
+  const start = html.indexOf('function showRestaurantDetail(listIdx, date)');
+  const section = html.slice(start, start + 1900);
+  assert(section.includes('detail-fav-btn'), 'detail-fav-btn fehlt in Restaurant-Detailansicht!');
+  assert(section.includes('detail-dayplan-btn'), 'detail-dayplan-btn fehlt in Restaurant-Detailansicht!');
+  assert(section.includes('toggleDayPlan(${listIdx})'), 'toggleDayPlan wird mit falschem Index aufgerufen!');
+});
+
+
+test('UI-13', '"Alle/Paar/Familie" Pill wurde von den Karten entfernt (Platz für Icons)', () => {
+  assert(!html.includes('for-pill'), 'for-pill Element ist noch im Code vorhanden!');
+  assert(!html.includes("const fc=forClass"), 'Toter fc-Code (forClass) ist noch vorhanden!');
+});
+
+
+test('DAY-18', 'Jede fav-btn-Instanz hat eine korrespondierende dayplan-btn-Instanz (Paritäts-Check)', () => {
+  const favCount = (html.match(/class="fav-btn/g) || []).length;
+  const dayplanCount = (html.match(/class="dayplan-btn/g) || []).length;
+  assertEqual(dayplanCount, favCount, `${dayplanCount} dayplan-btn vs ${favCount} fav-btn — nicht jedes Kartentemplate hat den Tagesplan-Button!`);
 });
 
 // ═══════════════════════════════════════════════════════════════════
