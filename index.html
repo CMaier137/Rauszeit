@@ -582,12 +582,7 @@
     <h2 id="results-title"></h2>
     <p id="results-meta"></p>
   </div>
-  <div class="activity-grid" id="activity-grid">
-    <div class="state-empty">
-      <div class="big-icon">🗺️</div>
-      <p>Wo startest du?<br>Gib deinen Ort ein und entdecke was in der Nähe auf dich wartet.</p>
-    </div>
-  </div>
+  <div class="activity-grid" id="activity-grid"></div>
 </main>
 
 <footer>
@@ -5294,7 +5289,7 @@ function setMode(mode) {
   btn.className = isRest ? 'btn-search rest-mode' : 'btn-search';
 
   // Clear results
-  document.getElementById('activity-grid').innerHTML = '<div class="state-empty"><div class="big-icon">'+(isRest?'🍽️':'🗺️')+'</div><p>'+(isRest?'Wähle deine Filter und finde das perfekte Restaurant.':'Wo startest du?<br>Gib deinen Ort ein und entdecke was in der Nähe auf dich wartet.')+'</p></div>';
+  document.getElementById('activity-grid').innerHTML = '';
   document.getElementById('load-more-wrap')?.remove();
   document.getElementById('results-header').style.display = 'none';
   document.getElementById('results-header').style.display = 'none';
