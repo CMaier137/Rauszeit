@@ -623,6 +623,40 @@ test('SKEL-04', 'Skeletons werden auch bei Fehler entfernt (kein Hängenbleiben)
   assert(catchBlock.includes('removeLoadMoreSkeletons()'), 'catch-Block entfernt Skeletons nicht — sie könnten hängen bleiben!');
 });
 
+
+test('UI-09', 'Detailansicht ist ein Fullscreen-Overlay (kein Scroll-Sprung mehr möglich)', () => {
+  // Overlay-CSS: fixed position deckt den kompletten Viewport ab
+  assert(html.includes('.detail-panel{background:var(--white);border:none;border-radius:0;padding:0;display:none;overflow:hidden;position:fixed;inset:0;'),
+    'detail-panel ist kein fixed Fullscreen-Overlay mehr!');
+  // Backdrop vorhanden
+  assert(html.includes('id="detail-backdrop"'), 'detail-backdrop Element fehlt!');
+  assert(html.includes('.detail-panel-backdrop'), 'Backdrop-CSS fehlt!');
+});
+
+test('UI-10', 'Öffnen/Schließen der Detailansicht steuert Backdrop und Body-Scroll-Lock', () => {
+  const showDetailStart = html.indexOf('async function showDetail(idx, date)');
+  const showDetailEnd = html.indexOf('function closeDetail()');
+  const showDetailSection = html.slice(showDetailStart, showDetailEnd);
+  assert(showDetailSection.includes("detail-backdrop').classList.add('open')"), 'showDetail öffnet den Backdrop nicht!');
+  assert(showDetailSection.includes("document.body.style.overflow = 'hidden'"), 'showDetail sperrt den Body-Scroll nicht!');
+  assert(showDetailSection.includes('panel.scrollTop = 0'), 'Panel scrollt beim Öffnen nicht an den Anfang!');
+
+  const closeDetailStart = html.indexOf('function closeDetail()');
+  const closeDetailSection = html.slice(closeDetailStart, closeDetailStart + 400);
+  assert(closeDetailSection.includes("detail-backdrop').classList.remove('open')"), 'closeDetail schließt den Backdrop nicht!');
+  assert(closeDetailSection.includes("document.body.style.overflow = ''"), 'closeDetail gibt den Body-Scroll nicht frei!');
+});
+
+test('UI-11', 'Escape-Taste schließt die Detailansicht', () => {
+  assert(html.includes("e.key==='Escape') closeDetail()"), 'Escape-Handler für closeDetail fehlt!');
+});
+
+
+test('UI-12', 'Kein redundanter "Wo startest du" Leerzustand mehr — Grid startet leer', () => {
+  assert(html.includes('<div class="activity-grid" id="activity-grid"></div>'), 'activity-grid enthält noch den alten Leerzustand-Platzhalter!');
+  assert(!html.includes('Wo startest du?<br>Gib deinen Ort ein'), 'Alter "Wo startest du" Text ist noch im Code vorhanden!');
+});
+
 // ═══════════════════════════════════════════════════════════════════
 // ZUSAMMENFASSUNG
 // ═══════════════════════════════════════════════════════════════════
