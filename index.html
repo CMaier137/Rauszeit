@@ -150,7 +150,6 @@
 
   /* Pills */
   .cat-pill{position:absolute;top:10px;left:10px;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;letter-spacing:.02em;z-index:2;}
-  .for-pill{position:absolute;top:10px;right:34px;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;z-index:2;}
   .badge-both{background:var(--sky-light);color:var(--sky);}
   .badge-couple{background:var(--rose-light);color:var(--rose);}
   .badge-kids{background:var(--moss-light);color:var(--moss);}
@@ -169,6 +168,9 @@
   .fav-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.88);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:transform .15s,background .1s;z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.1);}
   .fav-btn:hover{transform:scale(1.18);}
   .fav-btn.active{background:var(--rose-light);}
+  .dayplan-btn{position:absolute;top:8px;right:42px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.88);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:transform .15s,background .1s;z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+  .dayplan-btn:hover{transform:scale(1.18);}
+  .dayplan-btn.active{background:var(--accent-light);}
 
   /* Card body */
   .card-body{padding:16px 18px 18px;}
@@ -208,6 +210,37 @@
   .detail-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;}
   .detail-name{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;line-height:1.15;letter-spacing:-.3px;}
   .detail-sub{font-size:13px;color:var(--ink-3);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+  /* ── Tagesplan Overlay (nutzt dasselbe Overlay-Muster wie detail-panel) ── */
+  .dayplan-panel{background:var(--white);border:none;border-radius:0;padding:0;display:none;overflow:hidden;position:fixed;inset:0;z-index:1000;overflow-y:auto;}
+  .dayplan-panel.open{display:block;}
+  @media (min-width:700px){
+    .dayplan-panel{inset:auto;top:50%;left:50%;transform:translate(-50%,-50%);width:min(500px,90vw);max-height:88vh;border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  }
+  .dayplan-header{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--paper-2);display:flex;justify-content:space-between;align-items:center;}
+  .dayplan-header h3{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;}
+  .dayplan-item{padding:12px 16px;display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--paper-2);}
+  .dayplan-item-reorder{display:flex;flex-direction:column;gap:2px;}
+  .dayplan-item-reorder button{background:none;border:none;padding:2px;cursor:pointer;color:var(--ink-3);}
+  .dayplan-item-reorder button:hover{color:var(--ink);}
+  .dayplan-item-reorder button:disabled{opacity:.25;cursor:default;}
+  .dayplan-item-thumb{width:36px;height:36px;border-radius:8px;background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .dayplan-item-body{flex:1;min-width:0;}
+  .dayplan-item-name{font-size:13px;font-weight:500;}
+  .dayplan-item-meta{font-size:11px;color:var(--ink-3);}
+  .dayplan-item-remove{background:none;border:none;cursor:pointer;color:var(--ink-3);padding:4px;}
+  .dayplan-item-remove:hover{color:var(--rose);}
+  .dayplan-empty{padding:3rem 1.5rem;text-align:center;color:var(--ink-3);font-size:14px;}
+  .dayplan-check{padding:14px 16px;border-top:1px solid var(--paper-2);}
+  .dayplan-check.status-good{background:var(--moss-light);}
+  .dayplan-check.status-tight{background:#fef3e0;}
+  .dayplan-check.status-bad{background:var(--rose-light);}
+  .dayplan-check-title{font-size:13px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .dayplan-check-text{font-size:12px;color:var(--ink-2);line-height:1.5;}
+  .dayplan-footer{padding:12px 16px;border-top:1px solid var(--paper-2);display:flex;justify-content:space-between;}
+  .dayplan-footer button{background:none;border:none;font-size:13px;cursor:pointer;}
+  .dayplan-fab{position:fixed;bottom:20px;right:20px;z-index:500;background:var(--accent);color:#fff;border:none;border-radius:24px;padding:12px 18px;font-size:14px;font-weight:500;display:none;align-items:center;gap:8px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);font-family:'DM Sans',sans-serif;}
+  .dayplan-fab.visible{display:flex;}
   .detail-top-btns{display:flex;gap:8px;flex-shrink:0;}
   .btn-close{background:var(--paper);border:1.5px solid var(--paper-3);border-radius:var(--radius-sm);width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--ink-2);transition:background .1s;}
   .btn-close:hover{background:var(--paper-2);}
@@ -408,7 +441,7 @@
   .rest-card.active{border-color:#2c5f2e;box-shadow:0 0 0 3px rgba(44,95,46,.12);}
   .rest-thumb{height:68px;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
   .rest-thumb-bg{position:absolute;inset:0;opacity:.18;}
-  .rest-price-badge{position:absolute;top:7px;right:7px;font-size:10px;font-weight:600;background:rgba(0,0,0,.5);color:#fff;border-radius:4px;padding:2px 6px;}
+  .rest-price-badge{position:absolute;top:42px;right:7px;font-size:10px;font-weight:600;background:rgba(0,0,0,.5);color:#fff;border-radius:4px;padding:2px 6px;}
   .rest-cuisine-pill{position:absolute;top:7px;left:7px;font-size:9px;font-weight:500;padding:2px 7px;border-radius:10px;}
   .rest-body{padding:10px 12px 12px;}
   .rest-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:1px;}
@@ -577,6 +610,12 @@
   <div id="spot-result"></div>
   <div id="detail-backdrop" class="detail-panel-backdrop" onclick="closeDetail()"></div>
   <div id="detail-panel" class="detail-panel"></div>
+
+  <div id="dayplan-backdrop" class="detail-panel-backdrop" onclick="closeDayPlan()"></div>
+  <div id="dayplan-panel" class="dayplan-panel"></div>
+  <button id="dayplan-fab" class="dayplan-fab" onclick="openDayPlan()">
+    <span>📅</span> <span id="dayplan-fab-label">Mein Tag</span>
+  </button>
 
   <div class="results-header" id="results-header" style="display:none">
     <h2 id="results-title"></h2>
@@ -5327,10 +5366,11 @@ function loadMoreLocal(shownSoFar, date) {
       const cuisineClass='cuisine-'+(r.cuisine||'other');
       const cpillClass='cpill-'+(r.cuisine||'other');
       const favActive=isFav(r.name);
+      const inDayPlan=isInDayPlan(r.name);
       const div=document.createElement('div');
       div.className='rest-card'; div.id=`card-${idx}`;
       div.onclick=()=>showRestaurantDetail(idx,date);
-      div.innerHTML=`<div class="rest-thumb"><div class="rest-thumb-bg ${cuisineClass}"></div><span style="position:relative;z-index:1">${r.emoji}</span><span class="rest-cuisine-pill ${cpillClass}">${cuisineLabel(r.cuisine)}</span><span class="rest-price-badge">${r.priceRange||r.entranceFee||''}</span><button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button></div><div class="rest-body"><div class="rest-name">${r.name}</div><div class="rest-loc">${r.location}</div><div class="rest-specialty">${r.specialty||''}</div><div class="rest-footer"><span class="stat">${svgIcon('road')} ${r.distanceKm} km · ${driveStr}</span>${r.googleRating?`<div style="display:flex;align-items:center;gap:4px">${starsHtml(r.googleRating,r.reviewCount)}</div>`:''}</div><div class="rest-mini-badges">${r.terrace?'<span class="rest-mini-badge rmb-terrace">☀️ Terrasse</span>':''}${r.playground?'<span class="rest-mini-badge rmb-play">🛝 Spielplatz</span>':''}${r.childFriendly?'<span class="rest-mini-badge rmb-kids">👶 Kids</span>':''}</div></div>`;
+      div.innerHTML=`<div class="rest-thumb"><div class="rest-thumb-bg ${cuisineClass}"></div><span style="position:relative;z-index:1">${r.emoji}</span><span class="rest-cuisine-pill ${cpillClass}">${cuisineLabel(r.cuisine)}</span><span class="rest-price-badge">${r.priceRange||r.entranceFee||''}</span><button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${idx}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}" onclick="toggleDayPlan(${idx});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button><button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button></div><div class="rest-body"><div class="rest-name">${r.name}</div><div class="rest-loc">${r.location}</div><div class="rest-specialty">${r.specialty||''}</div><div class="rest-footer"><span class="stat">${svgIcon('road')} ${r.distanceKm} km · ${driveStr}</span>${r.googleRating?`<div style="display:flex;align-items:center;gap:4px">${starsHtml(r.googleRating,r.reviewCount)}</div>`:''}</div><div class="rest-mini-badges">${r.terrace?'<span class="rest-mini-badge rmb-terrace">☀️ Terrasse</span>':''}${r.playground?'<span class="rest-mini-badge rmb-play">🛝 Spielplatz</span>':''}${r.childFriendly?'<span class="rest-mini-badge rmb-kids">👶 Kids</span>':''}</div></div>`;
       grid.appendChild(div);
     });
   } else {
@@ -5338,13 +5378,13 @@ function loadMoreLocal(shownSoFar, date) {
       const idx = shownSoFar + i;
       const hrs=Math.floor(a.driveMinutes/60), mins=a.driveMinutes%60;
       const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
-      const fc=forClass(a.suitableFor||'both'), fl=forLabel(a.suitableFor||'both');
       const favActive=isFav(a.name), visitedActive=isVisited(a.name);
+      const inDayPlan=isInDayPlan(a.name);
       const durStr=durationStr(a.durationHours);
       const div=document.createElement('div');
       div.className=`act-card${visitedActive?' visited':''}`; div.id=`card-${idx}`;
       div.onclick=()=>showDetail(idx,date);
-      div.innerHTML=`<div class="card-thumb"><div class="card-thumb-bg thumb-${a.category}"></div><span class="card-thumb-emoji">${a.emoji}</span><span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span><span class="for-pill ${fc}">${fl}</span>${visitedActive?'<div class="visited-badge">✓ Besucht</div>':''}<button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button></div><div class="card-body"><div class="card-name">${a.name}</div><div class="card-location"><span class="env-dot env-dot-${a.environment||'outdoor'}"></span>${a.location||''}${a.environment?' · '+(a.environment==='indoor'?'Drinnen':'Draußen'):''}</div><div class="card-desc">${a.description}</div><div class="card-footer"><div class="card-stats"><span class="stat">${svgIcon('road')} ${a.distanceKm} km · ${driveStr}</span><span class="stat">${svgIcon('ticket')} ${a.entranceFee}</span>${durStr?`<span class="stat">${svgIcon('clock')} ${durStr}</span>`:''}</div><div style="display:flex;align-items:center;gap:6px">${starsHtml(a.googleRating,a.reviewCount)}${ratingBench(a.googleRating)}</div></div></div>`;
+      div.innerHTML=`<div class="card-thumb"><div class="card-thumb-bg thumb-${a.category}"></div><span class="card-thumb-emoji">${a.emoji}</span><span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span>${visitedActive?'<div class="visited-badge">✓ Besucht</div>':''}<button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${idx}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}" onclick="toggleDayPlan(${idx});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button><button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button></div><div class="card-body"><div class="card-name">${a.name}</div><div class="card-location"><span class="env-dot env-dot-${a.environment||'outdoor'}"></span>${a.location||''}${a.environment?' · '+(a.environment==='indoor'?'Drinnen':'Draußen'):''}</div><div class="card-desc">${a.description}</div><div class="card-footer"><div class="card-stats"><span class="stat">${svgIcon('road')} ${a.distanceKm} km · ${driveStr}</span><span class="stat">${svgIcon('ticket')} ${a.entranceFee}</span>${durStr?`<span class="stat">${svgIcon('clock')} ${durStr}</span>`:''}</div><div style="display:flex;align-items:center;gap:6px">${starsHtml(a.googleRating,a.reviewCount)}${ratingBench(a.googleRating)}</div></div></div>`;
       grid.appendChild(div);
     });
   }
@@ -5382,13 +5422,13 @@ async function loadMoreActivities(expandToRadius) {
         const idx = startIdx + i;
         const hrs=Math.floor(a.driveMinutes/60), mins=a.driveMinutes%60;
         const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
-        const fc=forClass(a.suitableFor||'both'), fl=forLabel(a.suitableFor||'both');
         const favActive=isFav(a.name), visitedActive=isVisited(a.name);
+        const inDayPlan=isInDayPlan(a.name);
         const durStr=durationStr(a.durationHours);
         const div = document.createElement('div');
         div.className = `act-card${visitedActive?' visited':''}`;
         div.id = `card-${idx}`; div.onclick = () => showDetail(idx, date);
-        div.innerHTML = `<div class="card-thumb"><div class="card-thumb-bg thumb-${a.category}"></div><span class="card-thumb-emoji">${a.emoji}</span><span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span><span class="for-pill ${fc}">${fl}</span>${visitedActive?'<div class="visited-badge">✓ Besucht</div>':''}<button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button></div><div class="card-body"><div class="card-name">${a.name}</div><div class="card-location"><span class="env-dot env-dot-${a.environment||'outdoor'}"></span>${a.location||''}${a.environment?' · '+(a.environment==='indoor'?'Drinnen':'Draußen'):''}</div><div class="card-desc">${a.description}</div><div class="card-footer"><div class="card-stats"><span class="stat">${svgIcon('road')} ${a.distanceKm} km · ${driveStr}</span><span class="stat">${svgIcon('ticket')} ${a.entranceFee}</span>${durStr?`<span class="stat">${svgIcon('clock')} ${durStr}</span>`:''}</div><div style="display:flex;align-items:center;gap:6px">${starsHtml(a.googleRating,a.reviewCount)}${ratingBench(a.googleRating)}</div></div></div>`;
+        div.innerHTML = `<div class="card-thumb"><div class="card-thumb-bg thumb-${a.category}"></div><span class="card-thumb-emoji">${a.emoji}</span><span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span>${visitedActive?'<div class="visited-badge">✓ Besucht</div>':''}<button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${idx}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}" onclick="toggleDayPlan(${idx});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button><button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button></div><div class="card-body"><div class="card-name">${a.name}</div><div class="card-location"><span class="env-dot env-dot-${a.environment||'outdoor'}"></span>${a.location||''}${a.environment?' · '+(a.environment==='indoor'?'Drinnen':'Draußen'):''}</div><div class="card-desc">${a.description}</div><div class="card-footer"><div class="card-stats"><span class="stat">${svgIcon('road')} ${a.distanceKm} km · ${driveStr}</span><span class="stat">${svgIcon('ticket')} ${a.entranceFee}</span>${durStr?`<span class="stat">${svgIcon('clock')} ${durStr}</span>`:''}</div><div style="display:flex;align-items:center;gap:6px">${starsHtml(a.googleRating,a.reviewCount)}${ratingBench(a.googleRating)}</div></div></div>`;
         grid.appendChild(div);
       });
       document.getElementById('results-title').textContent = document.getElementById('results-title').textContent.replace(/^\d+/, activities.length);
@@ -5439,9 +5479,8 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
       const idx = startIdx + i;
       const hrs=Math.floor(a.driveMinutes/60), mins=a.driveMinutes%60;
       const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
-      const fc=forClass(a.suitableFor||'both');
-      const fl=forLabel(a.suitableFor||'both');
       const favActive=isFav(a.name);
+      const inDayPlan=isInDayPlan(a.name);
       const visitedActive=isVisited(a.name);
       const durStr=durationStr(a.durationHours);
       const div = document.createElement('div');
@@ -5453,9 +5492,10 @@ Jedes Objekt: {"name":"Name","location":"Stadt, Region","category":"adventure|an
           <div class="card-thumb-bg thumb-${a.category}"></div>
           <span class="card-thumb-emoji">${a.emoji}</span>
           <span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span>
-          <span class="for-pill ${fc}">${fl}</span>
           ${visitedActive?`<div class="visited-badge">✓ Besucht</div>`:''}
-          <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}"
+          <button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${idx}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}"
+            onclick="toggleDayPlan(${idx});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button>
+          <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}"
             onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
         </div>
         <div class="card-body">
@@ -5583,10 +5623,11 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('api-key-input').addEventListener('keydown', e => { if (e.key==='Enter') saveKey(); });
   document.getElementById('location').addEventListener('keydown', e => { if (e.key==='Enter') { closeAutocomplete(); findActivities(); } });
   document.getElementById('spot-input').addEventListener('keydown', e => { if (e.key==='Enter') searchSpot(); });
-  document.addEventListener('keydown', e => { if (e.key==='Escape') closeDetail(); });
+  document.addEventListener('keydown', e => { if (e.key==='Escape') { closeDetail(); closeDayPlan(); } });
   restoreLastSearch();
   updateFavUI();
   updateVisitedUI();
+  updateDayPlanFab();
 });
 
 // ── Default date: next Saturday ─────────────────────────────────
@@ -5633,9 +5674,194 @@ function toggleFav(idx) {
   saveFavs(favs);
   updateFavUI();
   const btn = document.getElementById(`fav-btn-${idx}`);
-  if (btn) { btn.textContent = isFav(a.name) ? '❤️' : '🤍'; btn.classList.toggle('active', isFav(a.name)); }
+  if (btn) { btn.textContent = isFav(a.name) ? '❤️' : '🤍'; btn.classList.toggle('active', isFav(a.name)); btn.title = isFav(a.name) ? 'Von Favoriten entfernen' : 'Zu Favoriten hinzufügen'; }
   const dbtn = document.getElementById('detail-fav-btn');
-  if (dbtn) { dbtn.textContent = isFav(a.name) ? '❤️' : '🤍'; dbtn.classList.toggle('active', isFav(a.name)); }
+  if (dbtn) { dbtn.textContent = isFav(a.name) ? '❤️' : '🤍'; dbtn.classList.toggle('active', isFav(a.name)); dbtn.title = isFav(a.name) ? 'Von Favoriten entfernen' : 'Zu Favoriten hinzufügen'; }
+}
+
+// ── Tagesplan (Mein Tag) ──────────────────────────────────────────
+const DAYPLAN_STORE = 'wf_dayplan_v1';
+function getDayPlan() {
+  try { return JSON.parse(localStorage.getItem(DAYPLAN_STORE) || '[]'); } catch { return []; }
+}
+function saveDayPlan(plan) { localStorage.setItem(DAYPLAN_STORE, JSON.stringify(plan)); }
+function isInDayPlan(name) { return getDayPlan().some(v => v.name === name); }
+
+function toggleDayPlan(idx) {
+  const a = activities[idx];
+  if (!a) return;
+  let plan = getDayPlan();
+  if (isInDayPlan(a.name)) {
+    plan = plan.filter(v => v.name !== a.name);
+  } else {
+    plan.push({ name:a.name, location:a.location, category:a.category, emoji:a.emoji,
+      distanceKm:a.distanceKm, driveMinutes:a.driveMinutes, durationHours:a.durationHours,
+      openingHours:a.openingHours||'', lat:a.lat, lon:a.lon });
+  }
+  saveDayPlan(plan);
+  updateDayPlanFab();
+  const btn = document.getElementById(`dayplan-btn-${idx}`);
+  if (btn) { btn.textContent = isInDayPlan(a.name) ? '📅' : '🗓️'; btn.classList.toggle('active', isInDayPlan(a.name)); btn.title = isInDayPlan(a.name) ? 'Vom Tagesplan entfernen' : 'Zum Tagesplan hinzufügen'; }
+  const dbtn = document.getElementById('detail-dayplan-btn');
+  if (dbtn) { dbtn.textContent = isInDayPlan(a.name) ? '📅' : '🗓️'; dbtn.classList.toggle('active', isInDayPlan(a.name)); dbtn.title = isInDayPlan(a.name) ? 'Vom Tagesplan entfernen' : 'Zum Tagesplan hinzufügen'; }
+}
+
+function updateDayPlanFab() {
+  const plan = getDayPlan();
+  const fab = document.getElementById('dayplan-fab');
+  const label = document.getElementById('dayplan-fab-label');
+  if (!fab) return;
+  if (plan.length > 0) {
+    fab.classList.add('visible');
+    label.textContent = `Mein Tag · ${plan.length}`;
+  } else {
+    fab.classList.remove('visible');
+  }
+}
+
+function moveDayPlanItem(index, direction) {
+  const plan = getDayPlan();
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= plan.length) return;
+  [plan[index], plan[newIndex]] = [plan[newIndex], plan[index]];
+  saveDayPlan(plan);
+  renderDayPlan();
+}
+
+function removeDayPlanItem(index) {
+  const plan = getDayPlan();
+  plan.splice(index, 1);
+  saveDayPlan(plan);
+  renderDayPlan();
+  updateDayPlanFab();
+}
+
+function clearDayPlan() {
+  saveDayPlan([]);
+  renderDayPlan();
+  updateDayPlanFab();
+}
+
+function openDayPlan() {
+  renderDayPlan();
+  document.getElementById('dayplan-panel').classList.add('open');
+  document.getElementById('dayplan-backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDayPlan() {
+  document.getElementById('dayplan-panel').classList.remove('open');
+  document.getElementById('dayplan-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderDayPlan() {
+  const plan = getDayPlan();
+  const panel = document.getElementById('dayplan-panel');
+
+  const itemsHtml = plan.length === 0
+    ? `<div class="dayplan-empty">Noch keine Aktivitäten im Plan.<br>Öffne ein Ziel und tippe auf 🗓️ um es hinzuzufügen.</div>`
+    : plan.map((v, i) => `
+      <div class="dayplan-item">
+        <div class="dayplan-item-reorder">
+          <button onclick="moveDayPlanItem(${i},-1)" ${i===0?'disabled':''} aria-label="Nach oben">▲</button>
+          <button onclick="moveDayPlanItem(${i},1)" ${i===plan.length-1?'disabled':''} aria-label="Nach unten">▼</button>
+        </div>
+        <div class="dayplan-item-thumb">${v.emoji||'📍'}</div>
+        <div class="dayplan-item-body">
+          <div class="dayplan-item-name">${v.name}</div>
+          <div class="dayplan-item-meta">${v.distanceKm!=null?v.distanceKm+' km vom Start':''}${v.durationHours?' · '+durationStr(v.durationHours):''}</div>
+        </div>
+        <button class="dayplan-item-remove" onclick="removeDayPlanItem(${i})" aria-label="Entfernen">🗑️</button>
+      </div>`).join('');
+
+  const checkHtml = plan.length >= 2 ? `
+      <div class="dayplan-check" id="dayplan-check">
+        <div class="dayplan-check-text" style="display:flex;align-items:center;gap:6px;color:var(--ink-3)">
+          <span class="spinner" style="width:14px;height:14px;border-width:2px"></span> Claude prüft deinen Plan…
+        </div>
+      </div>` : '';
+
+  panel.innerHTML = `
+    <div class="dayplan-header">
+      <h3>Mein Tag</h3>
+      <button class="btn-close" onclick="closeDayPlan()">✕</button>
+    </div>
+    <div id="dayplan-items">${itemsHtml}</div>
+    ${checkHtml}
+    ${plan.length > 0 ? `
+    <div class="dayplan-footer">
+      <button onclick="clearDayPlan()" style="color:var(--rose)">Tag leeren</button>
+      <button onclick="shareDayPlan()" style="color:var(--ink-2)">Teilen ↗</button>
+    </div>` : ''}
+  `;
+
+  if (plan.length >= 2) loadDayPlanCheck(plan);
+}
+
+// ── KI-Machbarkeits-Check für den Tagesplan ────────────────────────
+async function loadDayPlanCheck(plan) {
+  const apiKey = getKey();
+  if (!apiKey) return;
+
+  const venueList = plan.map(v =>
+    `- ${v.name} (${v.distanceKm ?? '?'} km vom Start, Dauer ca. ${v.durationHours ?? '?'} Std., Öffnungszeiten: ${v.openingHours || 'unbekannt'})`
+  ).join('\n');
+
+  const prompt = `Du bist ein Reiseplanungs-Experte. Bewerte ob folgender Tagesausflug an einem Tag machbar ist:
+
+${venueList}
+
+Berücksichtige: Gesamtdauer aller Stopps, ungefähre Fahrzeiten zwischen den Orten (grob geschätzt anhand der Entfernungen vom Start), Öffnungszeiten-Konflikte, und ob genug Zeit für Pausen/Essen bleibt.
+
+Antworte NUR mit einem JSON-Objekt, kein Markdown:
+{"status":"good|tight|bad","text":"Kurze Begründung in 1-2 Sätzen auf Deutsch, max 200 Zeichen"}
+
+status="good" = locker machbar, status="tight" = knapp aber machbar, status="bad" = zu viel für einen Tag.`;
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "X-App-Password": apiKey },
+      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:300, messages:[{ role:"user", content:prompt }] })
+    });
+    if (!res.ok) throw new Error('Check fehlgeschlagen');
+    const data = await res.json();
+    const raw = data.content.map(b=>b.text||'').join('');
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Keine Antwort');
+    const result = JSON.parse(jsonMatch[0]);
+
+    const checkEl = document.getElementById('dayplan-check');
+    if (!checkEl) return; // Panel wurde inzwischen geschlossen
+
+    const statusMeta = {
+      good: { cls: 'status-good', icon: '✅', label: 'Locker machbar' },
+      tight: { cls: 'status-tight', icon: '⏰', label: 'Knapp, aber machbar' },
+      bad: { cls: 'status-bad', icon: '⚠️', label: 'Zu viel für einen Tag' },
+    };
+    const meta = statusMeta[result.status] || statusMeta.tight;
+    checkEl.className = `dayplan-check ${meta.cls}`;
+    checkEl.innerHTML = `
+      <div class="dayplan-check-title">${meta.icon} ${meta.label}</div>
+      <div class="dayplan-check-text">${result.text || ''}</div>
+    `;
+  } catch (e) {
+    const checkEl = document.getElementById('dayplan-check');
+    if (checkEl) checkEl.remove(); // Bei Fehler einfach keinen Check anzeigen
+  }
+}
+
+function shareDayPlan() {
+  const plan = getDayPlan();
+  if (!plan.length) return;
+  const text = `Mein Tagesplan:\n${plan.map((v,i)=>`${i+1}. ${v.name}`).join('\n')}\n\nErstellt mit rauszeit.`;
+  if (navigator.share) {
+    navigator.share({ title: 'Mein Tagesplan', text }).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text);
+    showError('Tagesplan in Zwischenablage kopiert!');
+  }
 }
 
 function updateFavUI() {
@@ -5745,13 +5971,15 @@ function buildRestaurantCardHtml(r, idx) {
   const cuisineClass=`cuisine-${r.cuisine||'other'}`;
   const cpillClass=`cpill-${r.cuisine||'other'}`;
   const favActive=isFav(r.name);
+  const inDayPlan=isInDayPlan(r.name);
   return `<div class="rest-card" id="card-${idx}" onclick="showRestaurantDetail(${idx},'')">
     <div class="rest-thumb">
       <div class="rest-thumb-bg ${cuisineClass}"></div>
       <span style="position:relative;z-index:1">${r.emoji||'🍽️'}</span>
       <span class="rest-cuisine-pill ${cpillClass}">${cuisineLabel(r.cuisine||'other')}</span>
       <span class="rest-price-badge">${r.priceRange||r.entranceFee||''}</span>
-      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
+      <button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${idx}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}" onclick="toggleDayPlan(${idx});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button>
+      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}" onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
     </div>
     <div class="rest-body">
       <div class="rest-name">${r.name}</div>
@@ -5783,13 +6011,16 @@ function renderRestaurantGrid(rests, date, location, maxKm) {
     const cuisineClass = 'cuisine-'+(r.cuisine||'other');
     const cpillClass   = 'cpill-'+(r.cuisine||'other');
     const favActive = isFav(r.name);
+    const inDayPlan = isInDayPlan(r.name);
     return `<div class="rest-card" id="card-${i}" onclick="showRestaurantDetail(${i}, '${date}')">
       <div class="rest-thumb">
         <div class="rest-thumb-bg ${cuisineClass}"></div>
         <span style="position:relative;z-index:1">${r.emoji}</span>
         <span class="rest-cuisine-pill ${cpillClass}">${cuisineLabel(r.cuisine)}</span>
         <span class="rest-price-badge">${r.priceRange||r.entranceFee||''}</span>
-        <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}"
+        <button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${i}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}"
+          onclick="toggleDayPlan(${i});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button>
+        <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}"
           onclick="toggleFav(${i});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
       </div>
       <div class="rest-body">
@@ -5822,6 +6053,8 @@ function showRestaurantDetail(listIdx, date) {
   const searchUrl=`https://www.google.com/search?q=${encodeURIComponent(r.name+' '+r.location)}`;
   const tipsHtml=r.tips?.map(t=>`<li>${t}</li>`).join('')||'';
   const closedToday = r.closedOn && new Date(date).toLocaleDateString('de-DE',{weekday:'long'})===r.closedOn;
+  const favActive=isFav(r.name);
+  const inDayPlan=isInDayPlan(r.name);
 
   const panel = document.getElementById('detail-panel');
   panel.innerHTML = `
@@ -5836,7 +6069,11 @@ function showRestaurantDetail(listIdx, date) {
             ${starsHtml(r.googleRating, r.reviewCount)}
           </div>
         </div>
-        <button class="btn-close" onclick="closeDetail()">✕</button>
+        <div class="detail-top-btns">
+          <button class="btn-fav-detail${favActive?' active':''}" id="detail-fav-btn" onclick="toggleFav(${listIdx})" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}">${favActive?'❤️':'🤍'}</button>
+          <button class="btn-fav-detail${inDayPlan?' active':''}" id="detail-dayplan-btn" onclick="toggleDayPlan(${listIdx})" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}">${inDayPlan?'📅':'🗓️'}</button>
+          <button class="btn-close" onclick="closeDetail()">✕</button>
+        </div>
       </div>
     </div>
     <div style="padding:.75rem 1.5rem 0;font-size:14px;color:var(--ink-2);line-height:1.6">${r.description||''}</div>
@@ -6065,9 +6302,8 @@ function ratingBench(rating) {
 function buildActivityCard(a, i, date, location, type, actType, maxKm) {
   const hrs=Math.floor((a.driveMinutes||0)/60), mins=(a.driveMinutes||0)%60;
   const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
-  const fc=forClass(a.suitableFor||'both');
-  const fl=forLabel(a.suitableFor||'both');
   const favActive=isFav(a.name);
+  const inDayPlan=isInDayPlan(a.name);
   const visitedActive=isVisited(a.name);
   const durStr=durationStr(a.durationHours);
   const isTop = i === 0 && (a.googleRating||0) >= 4.3;
@@ -6077,9 +6313,10 @@ function buildActivityCard(a, i, date, location, type, actType, maxKm) {
       <div class="card-thumb-bg thumb-${a.category||'other'}"></div>
       <span class="card-thumb-emoji">${a.emoji||'📍'}</span>
       <span class="cat-pill cat-${a.category||'other'}">${catLabel(a.category||'other')}</span>
-      <span class="for-pill ${fc}">${fl}</span>
       ${visitedActive?'<div class="visited-badge">✓ Besucht</div>':''}
-      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}"
+      <button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${i}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}"
+        onclick="toggleDayPlan(${i});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button>
+      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}"
         onclick="toggleFav(${i});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
     </div>
     <div class="card-body">
@@ -6112,9 +6349,8 @@ function renderGrid(acts, date, location, type, actType, maxKm) {
   grid.innerHTML = acts.map((a, i) => {
     const hrs=Math.floor(a.driveMinutes/60), mins=a.driveMinutes%60;
     const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
-    const fc=forClass(a.suitableFor||'both');
-    const fl=forLabel(a.suitableFor||'both');
     const favActive=isFav(a.name);
+    const inDayPlan=isInDayPlan(a.name);
     const visitedActive=isVisited(a.name);
     const enriched=!!a.description;
     const isTop = i === 0 && enriched && (a.googleRating||0) >= 4.3;
@@ -6125,9 +6361,10 @@ function renderGrid(acts, date, location, type, actType, maxKm) {
         <div class="card-thumb-bg thumb-${a.category}"></div>
         <span class="card-thumb-emoji">${a.emoji}</span>
         <span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span>
-        <span class="for-pill ${fc}">${fl}</span>
         ${visitedActive?`<div class="visited-badge">✓ Besucht</div>`:''}
-        <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}"
+        <button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${i}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}"
+          onclick="toggleDayPlan(${i});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button>
+        <button class="fav-btn${favActive?' active':''}" id="fav-btn-${i}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}"
           onclick="toggleFav(${i});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
       </div>
       <div class="card-body">
@@ -6157,8 +6394,7 @@ function updateCard(idx, date) {
   const hrs=Math.floor(a.driveMinutes/60), mins=a.driveMinutes%60;
   const driveStr=hrs>0?`${hrs}h${mins>0?' '+mins+'m':''}`:`${mins}m`;
   const favActive=isFav(a.name);
-  const fc=forClass(a.suitableFor||'both');
-  const fl=forLabel(a.suitableFor||'both');
+  const inDayPlan=isInDayPlan(a.name);
   const isTop = idx === 0 && (a.googleRating||0) >= 4.3;
   card.classList.remove('enriching');
   if (isTop) card.classList.add('top-pick');
@@ -6168,8 +6404,9 @@ function updateCard(idx, date) {
       <div class="card-thumb-bg thumb-${a.category}"></div>
       <span class="card-thumb-emoji">${a.emoji}</span>
       <span class="cat-pill cat-${a.category}">${catLabel(a.category)}</span>
-      <span class="for-pill ${fc}">${fl}</span>
-      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}"
+      <button class="dayplan-btn${inDayPlan?' active':''}" id="dayplan-btn-${idx}" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}"
+        onclick="toggleDayPlan(${idx});event.stopPropagation();">${inDayPlan?'📅':'🗓️'}</button>
+      <button class="fav-btn${favActive?' active':''}" id="fav-btn-${idx}" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}"
         onclick="toggleFav(${idx});event.stopPropagation();">${favActive?'❤️':'🤍'}</button>
     </div>
     <div class="card-body">
@@ -6587,6 +6824,7 @@ async function showDetail(idx, date) {
   const exploreUrl=`https://www.google.com/maps/search/${encodeURIComponent(a.googleQuery||a.name+' '+a.location)}`;
   const searchUrl=`https://www.google.com/search?q=${encodeURIComponent(a.name+' '+a.location)}`;
   const favActive=isFav(a.name);
+  const inDayPlan=isInDayPlan(a.name);
   const visitedActive=isVisited(a.name);
   const durStr = durationStr(a.durationHours);
   const tipsHtml = a.tips
@@ -6607,7 +6845,8 @@ async function showDetail(idx, date) {
           </div>
         </div>
         <div class="detail-top-btns">
-          <button class="btn-fav-detail${favActive?' active':''}" id="detail-fav-btn" onclick="toggleFav(${idx})">${favActive?'❤️':'🤍'}</button>
+          <button class="btn-fav-detail${favActive?' active':''}" id="detail-fav-btn" onclick="toggleFav(${idx})" title="${favActive?'Von Favoriten entfernen':'Zu Favoriten hinzufügen'}">${favActive?'❤️':'🤍'}</button>
+          <button class="btn-fav-detail${inDayPlan?' active':''}" id="detail-dayplan-btn" onclick="toggleDayPlan(${idx})" title="${inDayPlan?'Vom Tagesplan entfernen':'Zum Tagesplan hinzufügen'}">${inDayPlan?'📅':'🗓️'}</button>
           <button class="btn-close" onclick="closeDetail()">✕</button>
         </div>
       </div>
