@@ -729,7 +729,7 @@ test('DAY-05', 'Umsortieren (moveDayPlanItem) und Entfernen (removeDayPlanItem) 
 test('DAY-06', 'KI-Machbarkeits-Check ruft Worker mit strukturiertem Prompt auf', () => {
   assert(html.includes('function loadDayPlanCheck('), 'loadDayPlanCheck fehlt!');
   const start = html.indexOf('async function loadDayPlanCheck');
-  const section = html.slice(start, start + 1500);
+  const section = html.slice(start, start + 2200);
   assert(section.includes('status'), 'status-Feld im Prompt fehlt!');
   assert(section.includes('"good|tight|bad"'), 'Status-Optionen fehlen im Prompt!');
   assert(section.includes('WORKER_URL'), 'Check nutzt nicht den Worker!');
@@ -832,6 +832,32 @@ test('DAY-18', 'Jede fav-btn-Instanz hat eine korrespondierende dayplan-btn-Inst
   const favCount = (html.match(/class="fav-btn/g) || []).length;
   const dayplanCount = (html.match(/class="dayplan-btn/g) || []).length;
   assertEqual(dayplanCount, favCount, `${dayplanCount} dayplan-btn vs ${favCount} fav-btn — nicht jedes Kartentemplate hat den Tagesplan-Button!`);
+});
+
+
+test('DAY-19', 'Tagesplan zeigt verständlichen Lade-Text statt generischem "Claude prüft"', () => {
+  assert(html.includes('Deine Tagesplanung wird geprüft'), 'Neuer Lade-Text fehlt!');
+  assert(!html.includes('Claude prüft deinen Plan'), 'Alter generischer Lade-Text ist noch vorhanden!');
+  assert(html.includes('dayplan-skel-line'), 'Skeleton-Balken für Ladezustand fehlen!');
+});
+
+test('DAY-20', 'Standort-Hinweis-Banner klärt Luftlinie und fehlende Anfahrt zum ersten Stopp', () => {
+  assert(html.includes('dayplan-info-banner'), 'Info-Banner fehlt!');
+  assert(html.includes('Luftlinie zwischen den Stopps'), 'Luftlinien-Hinweis fehlt!');
+  assert(html.includes('Anfahrt zum ersten Stopp ist hier nicht mit eingerechnet'), 'Hinweis zur fehlenden Anfahrt zum ersten Stopp fehlt!');
+});
+
+test('DAY-21', 'Haversine-Distanzberechnung zwischen Tagesplan-Stopps vorhanden', () => {
+  assert(html.includes('function haversineKm('), 'haversineKm Funktion fehlt!');
+  assert(html.includes('bis zum nächsten Stopp'), 'Stopp-zu-Stopp-Distanzanzeige fehlt!');
+});
+
+test('DAY-22', 'KI-Check nutzt echte Stopp-zu-Stopp-Distanzen und klärt fehlende Anfahrt zum ersten Stopp', () => {
+  const start = html.indexOf('async function loadDayPlanCheck');
+  const section = html.slice(start, start + 2200);
+  assert(section.includes('haversineKm('), 'KI-Check nutzt haversineKm nicht!');
+  assert(section.includes('Anfahrt zum ersten Stopp'), 'Prompt klärt fehlende erste Anfahrt nicht!');
+  assert(section.includes('Luftlinie'), 'Prompt erwähnt Luftlinien-Ungenauigkeit nicht!');
 });
 
 // ═══════════════════════════════════════════════════════════════════

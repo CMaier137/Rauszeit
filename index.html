@@ -232,6 +232,12 @@
   .dayplan-item-remove:hover{color:var(--rose);}
   .dayplan-empty{padding:3rem 1.5rem;text-align:center;color:var(--ink-3);font-size:14px;}
   .dayplan-check{padding:14px 16px;border-top:1px solid var(--paper-2);}
+  .dayplan-check-loading-label{font-size:13px;color:var(--ink-2);font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .dayplan-skel-line{height:8px;border-radius:4px;background:var(--paper-2);margin-bottom:6px;overflow:hidden;position:relative;}
+  .dayplan-skel-line::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--paper-3),transparent);width:40%;animation:dayplan-shimmer 1.4s infinite;}
+  @keyframes dayplan-shimmer{0%{left:-40%}100%{left:100%}}
+  .dayplan-info-banner{padding:10px 16px;background:var(--sky-light);display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid var(--paper-2);}
+  .dayplan-info-banner span{font-size:12px;color:var(--sky);line-height:1.5;}
   .dayplan-check.status-good{background:var(--moss-light);}
   .dayplan-check.status-tight{background:#fef3e0;}
   .dayplan-check.status-bad{background:var(--rose-light);}
@@ -5687,6 +5693,17 @@ function getDayPlan() {
 function saveDayPlan(plan) { localStorage.setItem(DAYPLAN_STORE, JSON.stringify(plan)); }
 function isInDayPlan(name) { return getDayPlan().some(v => v.name === name); }
 
+// Luftlinien-Distanz zwischen zwei Koordinaten in km (Haversine-Formel)
+function haversineKm(lat1, lon1, lat2, lon2) {
+  if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null;
+  const R = 6371; // Erdradius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return Math.round(R * c * 10) / 10; // 1 Nachkommastelle
+}
+
 function toggleDayPlan(idx) {
   const a = activities[idx];
   if (!a) return;
@@ -5761,7 +5778,11 @@ function renderDayPlan() {
 
   const itemsHtml = plan.length === 0
     ? `<div class="dayplan-empty">Noch keine Aktivitäten im Plan.<br>Öffne ein Ziel und tippe auf 🗓️ um es hinzuzufügen.</div>`
-    : plan.map((v, i) => `
+    : plan.map((v, i) => {
+      const next = plan[i+1];
+      const distToNext = next ? haversineKm(v.lat, v.lon, next.lat, next.lon) : null;
+      const distMeta = distToNext != null ? `${distToNext} km bis zum nächsten Stopp (Luftlinie)` : (i===0 ? 'Erster Stopp' : '');
+      return `
       <div class="dayplan-item">
         <div class="dayplan-item-reorder">
           <button onclick="moveDayPlanItem(${i},-1)" ${i===0?'disabled':''} aria-label="Nach oben">▲</button>
@@ -5770,16 +5791,17 @@ function renderDayPlan() {
         <div class="dayplan-item-thumb">${v.emoji||'📍'}</div>
         <div class="dayplan-item-body">
           <div class="dayplan-item-name">${v.name}</div>
-          <div class="dayplan-item-meta">${v.distanceKm!=null?v.distanceKm+' km vom Start':''}${v.durationHours?' · '+durationStr(v.durationHours):''}</div>
+          <div class="dayplan-item-meta">${distMeta}${v.durationHours?' · '+durationStr(v.durationHours):''}</div>
         </div>
         <button class="dayplan-item-remove" onclick="removeDayPlanItem(${i})" aria-label="Entfernen">🗑️</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
   const checkHtml = plan.length >= 2 ? `
       <div class="dayplan-check" id="dayplan-check">
-        <div class="dayplan-check-text" style="display:flex;align-items:center;gap:6px;color:var(--ink-3)">
-          <span class="spinner" style="width:14px;height:14px;border-width:2px"></span> Claude prüft deinen Plan…
-        </div>
+        <div class="dayplan-check-loading-label">🧭 Deine Tagesplanung wird geprüft…</div>
+        <div class="dayplan-skel-line" style="width:90%"></div>
+        <div class="dayplan-skel-line" style="width:60%"></div>
       </div>` : '';
 
   panel.innerHTML = `
@@ -5787,6 +5809,11 @@ function renderDayPlan() {
       <h3>Mein Tag</h3>
       <button class="btn-close" onclick="closeDayPlan()">✕</button>
     </div>
+    ${plan.length > 0 ? `
+    <div class="dayplan-info-banner">
+      <span>🧭</span>
+      <span>Entfernungen sind Luftlinie zwischen den Stopps. Die Anfahrt zum ersten Stopp ist hier nicht mit eingerechnet.</span>
+    </div>` : ''}
     <div id="dayplan-items">${itemsHtml}</div>
     ${checkHtml}
     ${plan.length > 0 ? `
@@ -5804,15 +5831,20 @@ async function loadDayPlanCheck(plan) {
   const apiKey = getKey();
   if (!apiKey) return;
 
-  const venueList = plan.map(v =>
-    `- ${v.name} (${v.distanceKm ?? '?'} km vom Start, Dauer ca. ${v.durationHours ?? '?'} Std., Öffnungszeiten: ${v.openingHours || 'unbekannt'})`
-  ).join('\n');
+  const venueList = plan.map((v, i) => {
+    const next = plan[i+1];
+    const distToNext = next ? haversineKm(v.lat, v.lon, next.lat, next.lon) : null;
+    const distText = distToNext != null ? `${distToNext} km Luftlinie bis zum nächsten Stopp` : 'letzter Stopp';
+    return `${i+1}. ${v.name} (Dauer ca. ${v.durationHours ?? '?'} Std., Öffnungszeiten: ${v.openingHours || 'unbekannt'}, ${distText})`;
+  }).join('\n');
 
-  const prompt = `Du bist ein Reiseplanungs-Experte. Bewerte ob folgender Tagesausflug an einem Tag machbar ist:
+  const prompt = `Du bist ein Reiseplanungs-Experte. Bewerte ob folgender Tagesausflug an einem Tag machbar ist, in der angegebenen Reihenfolge:
 
 ${venueList}
 
-Berücksichtige: Gesamtdauer aller Stopps, ungefähre Fahrzeiten zwischen den Orten (grob geschätzt anhand der Entfernungen vom Start), Öffnungszeiten-Konflikte, und ob genug Zeit für Pausen/Essen bleibt.
+WICHTIG: Die Anfahrt zum ersten Stopp (von wo auch immer der Nutzer startet) ist NICHT bekannt und NICHT in den Distanzen enthalten — bewerte nur die Zeit AB dem ersten Stopp. Die angegebenen Distanzen sind Luftlinie, die tatsächliche Fahrstrecke kann besonders in Bergregionen deutlich länger sein — berücksichtige das bei deiner Einschätzung.
+
+Berücksichtige: Gesamtdauer aller Stopps, geschätzte Fahrzeiten zwischen den Orten basierend auf den angegebenen Luftlinien-Distanzen, Öffnungszeiten-Konflikte, und ob genug Zeit für Pausen/Essen bleibt.
 
 Antworte NUR mit einem JSON-Objekt, kein Markdown:
 {"status":"good|tight|bad","text":"Kurze Begründung in 1-2 Sätzen auf Deutsch, max 200 Zeichen"}
