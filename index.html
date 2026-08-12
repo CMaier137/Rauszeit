@@ -196,7 +196,13 @@
   .bench-good{background:#fef9c3;color:#a16207;}
 
   /* ── DETAIL PANEL ── */
-  .detail-panel{background:var(--white);border:1.5px solid var(--paper-3);border-radius:var(--radius);padding:0;margin-bottom:2rem;display:none;overflow:hidden;}
+  .detail-panel{background:var(--white);border:none;border-radius:0;padding:0;display:none;overflow:hidden;position:fixed;inset:0;z-index:1000;overflow-y:auto;}
+  .detail-panel.open{display:block;}
+  .detail-panel-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;}
+  .detail-panel-backdrop.open{display:block;}
+  @media (min-width:700px){
+    .detail-panel{inset:auto;top:50%;left:50%;transform:translate(-50%,-50%);width:min(600px,90vw);max-height:88vh;border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  }
   .detail-panel.open{display:block;}
   .detail-header{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--paper-2);}
   .detail-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;}
@@ -478,7 +484,7 @@
 
       <!-- Common fields -->
       <div class="field">
-        <label for="location">Standort</label>
+        <label for="location">Nach einem Standort suchen</label>
         <div class="autocomplete-wrap">
           <input type="text" id="location" placeholder="z.B. Pfaffenhofen, Miedzywodzie…" value="Pfaffenhofen an der Ilm, Deutschland" autocomplete="off" oninput="onLocationInput(this.value)" onblur="setTimeout(closeAutocomplete,150)"/>
           <div class="autocomplete-list" id="autocomplete-list" style="display:none"></div>
@@ -542,7 +548,7 @@
     </div>
 
     <div class="spot-search-wrap">
-      <p class="spot-search-label">Oder direkt nach einem Ort suchen</p>
+      <p class="spot-search-label">Oder direkt nach einer Aktivität suchen</p>
       <div class="spot-search-row">
         <input type="text" id="spot-input" class="spot-input" placeholder="z.B. Therme Erding, Legoland Günzburg, Kletterpark Jetzendorf…"/>
         <button class="btn-spot" onclick="searchSpot()" id="spot-btn">Nachschlagen</button>
@@ -569,6 +575,7 @@
   </div>
 
   <div id="spot-result"></div>
+  <div id="detail-backdrop" class="detail-panel-backdrop" onclick="closeDetail()"></div>
   <div id="detail-panel" class="detail-panel"></div>
 
   <div class="results-header" id="results-header" style="display:none">
@@ -5144,6 +5151,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('api-key-input').addEventListener('keydown', e => { if (e.key==='Enter') saveKey(); });
   document.getElementById('location').addEventListener('keydown', e => { if (e.key==='Enter') { closeAutocomplete(); findActivities(); } });
   document.getElementById('spot-input').addEventListener('keydown', e => { if (e.key==='Enter') searchSpot(); });
+  document.addEventListener('keydown', e => { if (e.key==='Escape') closeDetail(); });
   restoreLastSearch();
   updateFavUI();
   updateVisitedUI();
@@ -5440,7 +5448,9 @@ function showRestaurantDetail(listIdx, date) {
       <button class="action-btn share" onclick="shareActivity(${listIdx})">${svgIcon('share')} Teilen</button>
     </div>`;
   panel.className = 'detail-panel open';
-  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  panel.scrollTop = 0;
+  document.getElementById('detail-backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
   if (r.lat && r.lon && date) loadWeather(r.lat, r.lon, date);
 }
 
@@ -6215,12 +6225,16 @@ async function showDetail(idx, date) {
     </div>`;
 
   panel.className='detail-panel open';
-  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  panel.scrollTop = 0;
+  document.getElementById('detail-backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
   loadWeather(a.lat, a.lon, date);
 }
 
 function closeDetail() {
   document.getElementById('detail-panel').className='detail-panel';
+  document.getElementById('detail-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
   if (activeIdx!==null){document.getElementById(`card-${activeIdx}`)?.classList.remove('active');activeIdx=null;}
 }
 
